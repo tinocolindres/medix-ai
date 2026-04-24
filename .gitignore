@@ -1,0 +1,81 @@
+# ══════════════════════════════════════════════
+#  MEDIX AI — .gitignore
+# ══════════════════════════════════════════════
+
+# ── Secretos (NUNCA al repo) ──────────────────
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*secret*
+
+# ── Python / FastAPI ──────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── ChromaDB (vector store local) ────────────
+backend/chroma_db/
+chroma_db/
+
+# ── PDFs SESAL (archivos grandes) ────────────
+backend/data/sesal/*.pdf
+data/sesal/*.pdf
+
+# ── Celery ───────────────────────────────────
+celerybeat-schedule
+celerybeat.pid
+
+# ── Docker ───────────────────────────────────
+.docker/
+
+# ── Flutter / Dart ────────────────────────────
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/.pub-cache/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/*.jks
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/macos/Pods/
+mobile/.metadata
+
+# ── IDEs ─────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ── Uploads temporales ────────────────────────
+backend/uploads/
+uploads/
+
+# ── Backups ──────────────────────────────────
+*.bak
+*.backup

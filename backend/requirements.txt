@@ -1,0 +1,48 @@
+# ── Web Framework ─────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# ── Base de Datos ──────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+psycopg2-binary==2.9.10
+
+# ── Autenticación ──────────────────────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.20
+
+# ── IA — Claude (Anthropic) ────────────────────────────────────
+anthropic==0.40.0
+
+# ── Caché & Tareas Asíncronas ──────────────────────────────────
+redis==5.2.1
+celery==5.4.0
+
+# ── Procesamiento de Archivos / Imágenes ──────────────────────
+python-magic==0.4.27
+Pillow==11.0.0
+boto3==1.35.81
+
+# ── Vector DB para RAG (SESAL) ────────────────────────────────
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# ── PDF (ingestión de Normas SESAL) ───────────────────────────
+pypdf==5.1.0
+pdfplumber==0.11.4
+
+# ── Utilidades ────────────────────────────────────────────────
+pydantic[email]==2.10.3
+pydantic-settings==2.7.0
+httpx==0.28.1
+python-dotenv==1.0.1
+structlog==24.4.0
+
+# ── Sprint 3 — Analytics, FCM, Security ──────────────────────
+google-auth==2.37.0
+google-auth-httplib2==0.2.0
+firebase-admin==6.6.0
+aiosqlite==0.20.0
+ruff==0.8.6

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medix AI — Admin Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0F172A; --surface: #1E293B; --elevated: #2D3748;
+    --blue: #0A84FF; --green: #22C55E; --yellow: #F59E0B;
+    --red: #EF4444; --purple: #8B5CF6; --cyan: #06B6D4;
+    --text: #F8FAFC; --muted: #94A3B8; --border: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .main { padding: 28px; overflow-x: hidden; }
+
+  /* ── Sidebar ── */
+  .logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+  .logo-icon { width: 36px; height: 36px; background: rgba(10,132,255,.15); border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
+  .logo h1 { font-size: 16px; font-weight: 700; }
+  .logo span { font-size: 10px; color: var(--muted); }
+  nav { padding: 16px 12px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px; color: var(--muted); font-size: 14px; transition: all .15s; }
+  .nav-item:hover, .nav-item.active { background: rgba(10,132,255,.1); color: var(--blue); }
+  .nav-item .icon { font-size: 18px; }
+  .nav-section { font-size: 10px; color: var(--border); text-transform: uppercase; letter-spacing: 1px; padding: 16px 12px 6px; }
+
+  /* ── Header ── */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .header h2 { font-size: 22px; font-weight: 700; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .badge-live { background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3); color: var(--green); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .dot-live { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+  /* ── KPI Cards ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 800; line-height: 1; }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .kpi-icon { font-size: 22px; float: right; margin-top: -4px; }
+  .kpi-up { color: var(--green); }
+  .kpi-warn { color: var(--yellow); }
+  .kpi-err { color: var(--red); }
+
+  /* ── Charts ── */
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); }
+  .chart-wrap { position: relative; }
+
+  /* ── Tables ── */
+  .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(51,65,85,.4); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── Tags ── */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .tag-free { background: rgba(148,163,184,.15); color: var(--muted); }
+  .tag-pro { background: rgba(10,132,255,.15); color: var(--blue); }
+  .tag-clinical { background: rgba(139,92,246,.15); color: var(--purple); }
+  .tag-ok { background: rgba(34,197,94,.15); color: var(--green); }
+  .tag-warn { background: rgba(245,158,11,.15); color: var(--yellow); }
+  .tag-err { background: rgba(239,68,68,.15); color: var(--red); }
+
+  /* ── Login overlay ── */
+  #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 360px; }
+  .login-box h2 { margin-bottom: 6px; }
+  .login-box p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  input { width: 100%; padding: 11px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; margin-bottom: 12px; outline: none; }
+  input:focus { border-color: var(--blue); }
+  .login-btn { width: 100%; padding: 12px; background: var(--blue); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+
+  /* ── Feedback section ── */
+  .feedback-item { padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+  .stars { color: var(--yellow); font-size: 14px; }
+  .feedback-msg { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .feedback-meta { font-size: 11px; color: var(--border); margin-top: 4px; }
+
+  /* ── Broadcast modal ── */
+  #broadcast-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; align-items: center; justify-content: center; }
+  #broadcast-modal.open { display: flex; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 420px; }
+  textarea { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; resize: vertical; min-height: 80px; margin-bottom: 12px; }
+  select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; margin-bottom: 12px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .charts-grid, .tables-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div style="font-size:32px;margin-bottom:12px">🏥</div>
+    <h2>Medix AI Admin</h2>
+    <p>Acceso restringido a administradores</p>
+    <input type="email" id="login-email" placeholder="correo@medix.hn">
+    <input type="password" id="login-pass" placeholder="Contraseña">
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
+    <div class="error-msg" id="login-error">Credenciales incorrectas</div>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🏥</div>
+      <div><h1>Medix AI</h1><span>Admin Dashboard</span></div>
+    </div>
+    <nav>
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="showSection('overview')">
+        <span class="icon">📊</span> Resumen
+      </div>
+      <div class="nav-item" onclick="showSection('users')">
+        <span class="icon">👥</span> Usuarios
+      </div>
+      <div class="nav-item" onclick="showSection('feedback')">
+        <span class="icon">⭐</span> Feedback Beta
+      </div>
+      <div class="nav-section">Operaciones</div>
+      <div class="nav-item" onclick="showSection('broadcast')">
+        <span class="icon">📢</span> Broadcast Push
+      </div>
+      <div class="nav-item" onclick="showSection('tasks')">
+        <span class="icon">⚙️</span> Tareas
+      </div>
+      <div class="nav-section">Config</div>
+      <div class="nav-item" onclick="logout()">
+        <span class="icon">🚪</span> Cerrar sesión
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section id="sec-overview" class="section active">
+      <div class="header">
+        <div>
+          <h2>Dashboard en Tiempo Real</h2>
+          <div style="color:var(--muted);font-size:13px;margin-top:2px" id="last-update">Cargando...</div>
+        </div>
+        <div class="header-right">
+          <div class="badge-live"><div class="dot-live"></div> EN VIVO</div>
+          <button class="btn btn-ghost" onclick="loadStats()">↻ Actualizar</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Usuarios activos hoy</div><div class="kpi-value kpi-up" id="kpi-active">—</div><div class="kpi-icon">👤</div></div>
+        <div class="kpi-card"><div class="kpi-label">Mensajes chat</div><div class="kpi-value" style="color:var(--blue)" id="kpi-chat">—</div><div class="kpi-icon">💬</div></div>
+        <div class="kpi-card"><div class="kpi-label">MedScans</div><div class="kpi-value" style="color:var(--purple)" id="kpi-scan">—</div><div class="kpi-icon">🔬</div></div>
+        <div class="kpi-card"><div class="kpi-label">Notas SOAP</div><div class="kpi-value" style="color:var(--green)" id="kpi-soap">—</div><div class="kpi-icon">📝</div></div>
+        <div class="kpi-card"><div class="kpi-label">Consultas SESAL</div><div class="kpi-value" style="color:var(--cyan)" id="kpi-sesal">—</div><div class="kpi-icon">📋</div></div>
+        <div class="kpi-card"><div class="kpi-label">Calculadoras Guardia</div><div class="kpi-value" style="color:var(--red)" id="kpi-guardia">—</div><div class="kpi-icon">🏥</div></div>
+        <div class="kpi-card"><div class="kpi-label">Nuevos registros</div><div class="kpi-value kpi-up" id="kpi-reg">—</div><div class="kpi-icon">✅</div></div>
+        <div class="kpi-card"><div class="kpi-label">Upgrades hoy</div><div class="kpi-value" style="color:var(--yellow)" id="kpi-upgrades">—</div><div class="kpi-icon">⬆️</div></div>
+        <div class="kpi-card"><div class="kpi-label">MRR estimado</div><div class="kpi-value kpi-up" id="kpi-mrr">—</div><div class="kpi-icon">💰</div><div class="kpi-sub">USD/mes</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tokens Claude usados</div><div class="kpi-value" style="color:var(--muted)" id="kpi-tokens">—</div><div class="kpi-icon">🤖</div></div>
+        <div class="kpi-card"><div class="kpi-label">Lat. chat promedio</div><div class="kpi-value" style="color:var(--blue)" id="kpi-latency">—</div><div class="kpi-icon">⚡</div><div class="kpi-sub">ms</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tasa de errores</div><div class="kpi-value kpi-warn" id="kpi-errors">—</div><div class="kpi-icon">⚠️</div><div class="kpi-sub">%</div></div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">📈 Actividad — últimos 14 días</div>
+          <div class="chart-wrap"><canvas id="activityChart" height="200"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🥧 Distribución por plan</div>
+          <div class="chart-wrap"><canvas id="tierChart" height="200"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Module usage + user roles -->
+      <div class="tables-grid">
+        <div class="chart-card">
+          <div class="chart-title">📊 Uso por módulo (hoy)</div>
+          <canvas id="moduleChart" height="180"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">👥 Usuarios por rol</div>
+          <canvas id="roleChart" height="180"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS -->
+    <section id="sec-users" class="section">
+      <div class="header">
+        <h2>Gestión de Usuarios</h2>
+        <button class="btn btn-primary" onclick="loadUsers()">↻ Actualizar</button>
+      </div>
+      <div class="chart-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th><th>Rol</th><th>Plan</th>
+              <th>Chat hoy</th><th>Scans hoy</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr><td colspan="7" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section id="sec-feedback" class="section">
+      <div class="header">
+        <div>
+          <h2>Feedback Beta Users</h2>
+          <div style="color:var(--muted);font-size:13px" id="avg-rating-display">Promedio: cargando...</div>
+        </div>
+        <button class="btn btn-ghost" onclick="loadFeedback()">↻ Actualizar</button>
+      </div>
+      <div id="feedback-list">
+        <div style="color:var(--muted);text-align:center;padding:40px">Cargando feedback...</div>
+      </div>
+    </section>
+
+    <!-- BROADCAST -->
+    <section id="sec-broadcast" class="section">
+      <div class="header"><h2>Broadcast Push Notification</h2></div>
+      <div class="chart-card" style="max-width:500px">
+        <div class="chart-title">Enviar notificación a usuarios</div>
+        <label style="font-size:13px;color:var(--muted)">Título</label>
+        <input type="text" id="bc-title" placeholder="Ej: Nueva función disponible 🎉" style="margin-top:6px">
+        <label style="font-size:13px;color:var(--muted)">Mensaje</label>
+        <textarea id="bc-body" placeholder="Descripción del mensaje..."></textarea>
+        <label style="font-size:13px;color:var(--muted)">Filtro de plan (opcional)</label>
+        <select id="bc-tier" style="margin-bottom:16px">
+          <option value="">Todos los usuarios</option>
+          <option value="pro">Solo Pro</option>
+          <option value="clinical">Solo Clinical</option>
+          <option value="free">Solo Free</option>
+        </select>
+        <button class="btn btn-primary" onclick="sendBroadcast()" style="width:100%">📢 Enviar Push</button>
+        <div id="bc-result" style="margin-top:12px;font-size:13px;display:none"></div>
+      </div>
+    </section>
+
+    <!-- TASKS -->
+    <section id="sec-tasks" class="section">
+      <div class="header"><h2>Tareas del Sistema</h2></div>
+      <div style="display:grid;gap:12px;max-width:600px">
+        <div class="chart-card">
+          <div class="chart-title">🔄 Reset rate limits manualmente</div>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Resetea los contadores de chat y scan de todos los usuarios.</p>
+          <button class="btn btn-ghost" onclick="runTask('reset-rate-limits')">Ejecutar reset</button>
+          <div id="task-reset-result" style="margin-top:8px;font-size:12px;color:var(--green)"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">📊 Generar snapshot diario</div>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Genera el resumen de métricas de ayer para el historial.</p>
+          <button class="btn btn-ghost" onclick="runTask('generate-snapshot')">Generar snapshot</button>
+          <div id="task-snapshot-result" style="margin-top:8px;font-size:12px;color:var(--green)"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const API = (window.__MEDIX_API_URL__ || 'http://localhost:8000') + '/api/v1';
+let token = localStorage.getItem('medix_admin_token') || '';
+let charts = {};
+
+// ── Auth ──────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email, password: pass})
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (data.role !== 'admin') { showLoginError('No tienes permisos de administrador'); return; }
+    token = data.access_token;
+    localStorage.setItem('medix_admin_token', token);
+    document.getElementById('login-overlay').style.display = 'none';
+    initDashboard();
+  } catch {
+    showLoginError('Credenciales incorrectas');
+  }
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function logout() {
+  localStorage.removeItem('medix_admin_token');
+  location.reload();
+}
+
+// ── Navigation ────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`sec-${name}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'users') loadUsers();
+  if (name === 'feedback') loadFeedback();
+}
+
+// ── API Helper ────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  });
+  if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const data = await apiFetch('/admin/stats/realtime');
+    const dist = data.user_distribution;
+
+    // KPIs
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val ?? '—'; };
+    set('kpi-active', data.active_users_today);
+    set('kpi-chat', data.chat_messages.toLocaleString());
+    set('kpi-scan', data.medscan_uploads);
+    set('kpi-soap', data.soap_notes);
+    set('kpi-sesal', data.sesal_queries);
+    set('kpi-guardia', data.guardia_calcs);
+    set('kpi-reg', data.new_registrations);
+    set('kpi-upgrades', data.upgrades);
+    set('kpi-mrr', `$${dist?.mrr_estimate_usd?.toFixed(0) || 0}`);
+    set('kpi-tokens', data.total_tokens_used.toLocaleString());
+    set('kpi-latency', data.avg_chat_latency_ms);
+    set('kpi-errors', data.error_rate_pct?.toFixed(1) + '%');
+
+    const now = new Date().toLocaleTimeString('es-HN');
+    document.getElementById('last-update').textContent = `Última actualización: ${now}`;
+
+    // Charts
+    drawTierChart(dist?.by_tier || {});
+    drawRoleChart(dist?.by_role || {});
+    drawModuleChart(data);
+    loadHistory();
+  } catch(e) {
+    console.error('loadStats error:', e);
+  }
+}
+
+async function loadHistory() {
+  try {
+    const data = await apiFetch('/admin/stats/history?days=14');
+    if (!data.length) return;
+    drawActivityChart(data);
+  } catch(e) {}
+}
+
+// ── Charts ────────────────────────────────────────────────────
+function drawActivityChart(data) {
+  const ctx = document.getElementById('activityChart');
+  if (charts.activity) charts.activity.destroy();
+  charts.activity = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => d.date.slice(5)),
+      datasets: [
+        { label: 'Usuarios activos', data: data.map(d => d.active_users), borderColor: '#0A84FF', backgroundColor: 'rgba(10,132,255,.1)', fill: true, tension: .4 },
+        { label: 'Mensajes chat', data: data.map(d => d.chat_messages), borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,.05)', fill: false, tension: .4 },
+        { label: 'MedScans', data: data.map(d => d.medscan_uploads), borderColor: '#8B5CF6', fill: false, tension: .4 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#94A3B8', boxWidth: 12 } } }, scales: { x: { ticks: { color: '#94A3B8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94A3B8' }, grid: { color: '#334155' } } } }
+  });
+}
+
+function drawTierChart(tiers) {
+  const ctx = document.getElementById('tierChart');
+  if (charts.tier) charts.tier.destroy();
+  charts.tier = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Free', 'Pro', 'Clinical'],
+      datasets: [{ data: [tiers.free||0, tiers.pro||0, tiers.clinical||0], backgroundColor: ['#475569','#0A84FF','#8B5CF6'], borderWidth: 0 }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', boxWidth: 12, padding: 12 } } }, cutout: '65%' }
+  });
+}
+
+function drawModuleChart(data) {
+  const ctx = document.getElementById('moduleChart');
+  if (charts.module) charts.module.destroy();
+  charts.module = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Chat', 'MedScan', 'SOAP', 'SESAL', 'ECOE', 'Guardia'],
+      datasets: [{ data: [data.chat_messages, data.medscan_uploads, data.soap_notes, data.sesal_queries, data.ecoe_sessions, data.guardia_calcs], backgroundColor: ['#0A84FF','#8B5CF6','#22C55E','#06B6D4','#F59E0B','#EF4444'], borderRadius: 6, borderWidth: 0 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94A3B8' }, grid: { display: false } }, y: { ticks: { color: '#94A3B8' }, grid: { color: '#334155' } } } }
+  });
+}
+
+function drawRoleChart(roles) {
+  const ctx = document.getElementById('roleChart');
+  if (charts.role) charts.role.destroy();
+  charts.role = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Estudiante', 'Médico Gral', 'Especialista', 'Admin'],
+      datasets: [{ data: [roles.student||0, roles.medico_general||0, roles.medico_especialista||0, roles.admin||0], backgroundColor: ['#0A84FF','#22C55E','#8B5CF6','#F59E0B'], borderWidth: 0 }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', boxWidth: 12, padding: 10 } } }, cutout: '65%' }
+  });
+}
+
+// ── Users ─────────────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const users = await apiFetch('/admin/users?limit=50');
+    const tbody = document.getElementById('users-table-body');
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td><div style="font-weight:600">${u.full_name}</div><div style="color:var(--muted);font-size:11px">${u.email}</div></td>
+        <td><span class="tag tag-${u.role === 'admin' ? 'warn' : 'ok'}">${u.role}</span></td>
+        <td><span class="tag tag-${u.tier}">${u.tier.toUpperCase()}</span></td>
+        <td>${u.chat_today}</td>
+        <td>${u.scan_today}</td>
+        <td><span class="tag tag-${u.is_active ? 'ok' : 'err'}">${u.is_active ? 'Activo' : 'Inactivo'}</span></td>
+        <td>
+          <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px" onclick="upgradeUser('${u.id}','pro')">→Pro</button>
+          <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:4px" onclick="toggleUser('${u.id}','${u.is_active}')">
+            ${u.is_active ? 'Suspender' : 'Reactivar'}
+          </button>
+        </td>
+      </tr>
+    `).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted)">Sin usuarios</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function upgradeUser(userId, plan) {
+  if (!confirm(`¿Cambiar plan de este usuario a ${plan}?`)) return;
+  try {
+    await apiFetch(`/admin/users/${userId}`, { method: 'PATCH', body: JSON.stringify({ subscription_tier: plan }) });
+    loadUsers();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function toggleUser(userId, isActive) {
+  const newState = isActive === 'true' ? false : true;
+  try {
+    await apiFetch(`/admin/users/${userId}`, { method: 'PATCH', body: JSON.stringify({ is_active: newState }) });
+    loadUsers();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ── Feedback ──────────────────────────────────────────────────
+async function loadFeedback() {
+  try {
+    const data = await apiFetch('/admin/feedback?limit=20');
+    document.getElementById('avg-rating-display').textContent = `Promedio: ${'⭐'.repeat(Math.round(data.avg_rating))} ${data.avg_rating}/5 (${data.total} respuestas)`;
+    const list = document.getElementById('feedback-list');
+    list.innerHTML = data.feedback.map(f => `
+      <div class="feedback-item">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="stars">${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
+          <span class="tag tag-ok" style="font-size:10px">${f.module || 'general'}</span>
+        </div>
+        ${f.message ? `<div class="feedback-msg">"${f.message}"</div>` : ''}
+        <div class="feedback-meta">${new Date(f.created_at).toLocaleDateString('es-HN')}</div>
+      </div>
+    `).join('') || '<div style="color:var(--muted);text-align:center;padding:32px">Sin feedback aún</div>';
+  } catch(e) { console.error(e); }
+}
+
+// ── Broadcast ─────────────────────────────────────────────────
+async function sendBroadcast() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body = document.getElementById('bc-body').value.trim();
+  const tier = document.getElementById('bc-tier').value;
+  if (!title || !body) { alert('Completa título y mensaje'); return; }
+  try {
+    const result = await apiFetch('/admin/broadcast', {
+      method: 'POST',
+      body: JSON.stringify({ title, body, tier_filter: tier || null })
+    });
+    const el = document.getElementById('bc-result');
+    el.style.display = 'block';
+    el.style.color = 'var(--green)';
+    el.textContent = `✅ Enviado a ${result.sent} dispositivos`;
+  } catch(e) {
+    const el = document.getElementById('bc-result');
+    el.style.display = 'block';
+    el.style.color = 'var(--red)';
+    el.textContent = 'Error: ' + e.message;
+  }
+}
+
+// ── Tasks ─────────────────────────────────────────────────────
+async function runTask(taskName) {
+  const resultId = `task-${taskName.replace('/','-')}-result`;
+  try {
+    const result = await apiFetch(`/admin/tasks/${taskName}`, { method: 'POST' });
+    const el = document.getElementById(resultId);
+    if (el) { el.textContent = '✅ ' + JSON.stringify(result); }
+  } catch(e) {
+    const el = document.getElementById(resultId);
+    if (el) { el.style.color = 'var(--red)'; el.textContent = '❌ ' + e.message; }
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+function initDashboard() {
+  loadStats();
+  // Auto-refresh cada 30 segundos
+  setInterval(loadStats, 30000);
+}
+
+// Auto-login si hay token guardado
+window.addEventListener('load', () => {
+  if (token) {
+    document.getElementById('login-overlay').style.display = 'none';
+    initDashboard();
+  }
+  // Enter key en login
+  document.getElementById('login-pass').addEventListener('keypress', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+});
+</script>
+</body>
+</html>

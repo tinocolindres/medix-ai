@@ -1,0 +1,78 @@
+name: medix_ai
+description: "Medix AI — Plataforma médica multiplataforma para Honduras"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ── Estado ────────────────────────────────────────────────────
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # ── HTTP / API ────────────────────────────────────────────────
+  dio: ^5.7.0
+  retrofit: ^4.2.0
+
+  # ── Almacenamiento local ──────────────────────────────────────
+  shared_preferences: ^2.3.2
+  flutter_secure_storage: ^9.2.2
+  hive_flutter: ^1.1.0
+
+  # ── UI / Diseño ───────────────────────────────────────────────
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  lottie: ^3.1.3
+  fl_chart: ^0.69.0
+
+  # ── Voz (SOAP Dictation) ──────────────────────────────────────
+  speech_to_text: ^6.6.2
+  flutter_tts: ^4.0.2
+
+  # ── Cámara / Archivos (MedScan) ───────────────────────────────
+  image_picker: ^1.1.2
+  file_picker: ^8.1.2
+  permission_handler: ^11.3.1
+
+  # ── Markdown rendering ────────────────────────────────────────
+  flutter_markdown: ^0.7.4
+
+  # ── Conectividad (Modo Guardia offline) ───────────────────────
+  connectivity_plus: ^6.0.5
+
+  # ── Notificaciones locales ────────────────────────────────────
+  flutter_local_notifications: ^17.2.3
+
+  # ── Íconos ────────────────────────────────────────────────────
+  cupertino_icons: ^1.0.8
+  phosphor_flutter: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  riverpod_generator: ^2.4.3
+  build_runner: ^2.4.13
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/lottie/
+  fonts:
+    - family: MedixSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+          weight: 700
