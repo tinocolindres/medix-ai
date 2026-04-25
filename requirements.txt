@@ -17,4 +17,3 @@ python-dotenv==1.0.1
 structlog==24.4.0
 stripe==11.2.0
 celery==5.4.0
-aiosqlite==0.20.0

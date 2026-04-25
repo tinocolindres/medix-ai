@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # ── Base de Datos ─────────────────────────────────────────
-    DATABASE_URL: str = "sqlite+aiosqlite://medix_user:password@localhost:5432/medix_db"
+    DATABASE_URL: str = "postgresql+asyncpg://medix_user:password@localhost:5432/medix_db"
 
     # ── Redis ─────────────────────────────────────────────────
     REDIS_URL: str = "redis://localhost:6379/0"
