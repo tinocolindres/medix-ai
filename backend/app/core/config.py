@@ -1,6 +1,4 @@
-from pydantic_settings import BaseSettings
-from functools import lru_cache
-cat > backend/app/core/config.py << 'EOF'
+
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
