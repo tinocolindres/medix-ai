@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import String, Text, DateTime, Float, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON
 from app.db.session import Base
 
 
@@ -34,7 +34,7 @@ class AnalyticsEvent(Base):
     module: Mapped[str | None] = mapped_column(String(50))
     # chat | medscan | soap | ecoe | sesal | guardia | auth | subscription
 
-    extra: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+   extra: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     # Datos adicionales: {"scan_type": "xray", "urgency": "high", "tokens": 420}
 
     # ── Rendimiento ────────────────────────────────────────────
