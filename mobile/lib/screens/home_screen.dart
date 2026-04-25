@@ -4,6 +4,8 @@ import 'chat_screen.dart';
 import 'medscan_screen.dart';
 import 'guardia_screen.dart';
 import 'soap_screen.dart';
+import 'ecoe_screen.dart';
+import 'sesal_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -97,11 +99,11 @@ class _DashboardTab extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 16),
                 Row(children: [
-                  _QuickBtn(icon: Icons.chat_bubble_outline, label: 'Chat IA',
-                    onTap: () {}),
-                  const SizedBox(width: 8),
-                  _QuickBtn(icon: Icons.document_scanner_outlined, label: 'Escanear',
-                    onTap: () {}),
+                 _QuickBtn(icon: Icons.chat_bubble_outline, label: 'Chat IA',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()))),
+                const SizedBox(width: 8),
+               _QuickBtn(icon: Icons.document_scanner_outlined, label: 'Escanear',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MedScanScreen()))),
                   const SizedBox(width: 8),
                   _QuickBtn(icon: Icons.mic, label: 'SOAP',
                     onTap: () => Navigator.push(context,
@@ -112,59 +114,58 @@ class _DashboardTab extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // ── Módulos principales ───────────────────────────
-            const Text('Módulos',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 14),
-
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.3,
-              children: const [
-                _ModuleCard(
-                  icon: Icons.psychology_outlined,
-                  title: 'Chat IA Médico',
-                  subtitle: 'Consultas contextualizadas',
-                  color: MedixColors.blue,
-                ),
-                _ModuleCard(
-                  icon: Icons.document_scanner_outlined,
-                  title: 'MedScan',
-                  subtitle: 'Análisis de imágenes',
-                  color: Color(0xFF8B5CF6),
-                ),
-                _ModuleCard(
-                  icon: Icons.mic_outlined,
-                  title: 'Dictado SOAP',
-                  subtitle: 'Notas de evolución',
-                  color: MedixColors.success,
-                ),
-                _ModuleCard(
-                  icon: Icons.local_hospital_outlined,
-                  title: 'Modo Guardia',
-                  subtitle: 'Calculadoras offline',
-                  color: MedixColors.danger,
-                ),
-                _ModuleCard(
-                  icon: Icons.school_outlined,
-                  title: 'Simulador ECOE',
-                  subtitle: 'Pacientes virtuales',
-                  color: MedixColors.warning,
-                ),
-                _ModuleCard(
-                  icon: Icons.policy_outlined,
-                  title: 'Normas SESAL',
-                  subtitle: 'Protocolos Honduras',
-                  color: Color(0xFF06B6D4),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
+           GridView.count(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  crossAxisCount: 2,
+  mainAxisSpacing: 12,
+  crossAxisSpacing: 12,
+  childAspectRatio: 1.3,
+  children: [
+    _ModuleCard(
+      icon: Icons.psychology_outlined,
+      title: 'Chat IA Médico',
+      subtitle: 'Consultas contextualizadas',
+      color: MedixColors.blue,
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen())),
+    ),
+    _ModuleCard(
+      icon: Icons.document_scanner_outlined,
+      title: 'MedScan',
+      subtitle: 'Análisis de imágenes',
+      color: const Color(0xFF8B5CF6),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MedScanScreen())),
+    ),
+    _ModuleCard(
+      icon: Icons.mic_outlined,
+      title: 'Dictado SOAP',
+      subtitle: 'Notas de evolución',
+      color: MedixColors.success,
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SOAPScreen())),
+    ),
+    _ModuleCard(
+      icon: Icons.local_hospital_outlined,
+      title: 'Modo Guardia',
+      subtitle: 'Calculadoras offline',
+      color: MedixColors.danger,
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuardiaScreen())),
+    ),
+    _ModuleCard(
+      icon: Icons.school_outlined,
+      title: 'Simulador ECOE',
+      subtitle: 'Pacientes virtuales',
+      color: MedixColors.warning,
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ECOEScreen())),
+    ),
+    _ModuleCard(
+      icon: Icons.policy_outlined,
+      title: 'Normas SESAL',
+      subtitle: 'Protocolos Honduras',
+      color: const Color(0xFF06B6D4),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SESALScreen())),
+    ),
+  ],
+),
 
             // ── Disclaimer ───────────────────────────────────
             Container(
@@ -221,31 +222,34 @@ class _ModuleCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color color;
-  const _ModuleCard({required this.icon, required this.title, required this.subtitle, required this.color});
-
+  final VoidCallback? onTap;
+  const _ModuleCard({required this.icon, required this.title, required this.subtitle, required this.color, this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MedixColors.bgSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MedixColors.border),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: color, size: 22),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: MedixColors.bgSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: MedixColors.border),
         ),
-        const Spacer(),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-        const SizedBox(height: 2),
-        Text(subtitle, style: const TextStyle(color: MedixColors.textMuted, fontSize: 11)),
-      ]),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const Spacer(),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          const SizedBox(height: 2),
+          Text(subtitle, style: const TextStyle(color: MedixColors.textMuted, fontSize: 11)),
+        ]),
+      ),
     );
   }
 }

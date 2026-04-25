@@ -20,7 +20,7 @@ dependencies:
 
   # ── Almacenamiento local ──────────────────────────────────────
   shared_preferences: ^2.3.2
-  flutter_secure_storage: ^9.2.2
+  flutter_secure_storage: 10.0.0
   hive_flutter: ^1.1.0
 
   # ── UI / Diseño ───────────────────────────────────────────────
@@ -32,7 +32,7 @@ dependencies:
   fl_chart: ^0.69.0
 
   # ── Voz (SOAP Dictation) ──────────────────────────────────────
-  speech_to_text: ^6.6.2
+  speech_to_text: 7.3.0
   flutter_tts: ^4.0.2
 
   # ── Cámara / Archivos (MedScan) ───────────────────────────────

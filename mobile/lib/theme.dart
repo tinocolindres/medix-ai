@@ -60,7 +60,7 @@ class MedixTheme {
           fontSize: 14, color: MedixColors.textSecondary,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: MedixColors.bgSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(

@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
       }
     } catch (e) {
-      setState(() { _error = 'Error al crear cuenta. Verifica tus datos.'; });
+      setState(() { _error = e.toString(); });
     } finally {
       setState(() { _loading = false; });
     }
