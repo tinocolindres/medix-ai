@@ -34,7 +34,7 @@ class AnalyticsEvent(Base):
     module: Mapped[str | None] = mapped_column(String(50))
     # chat | medscan | soap | ecoe | sesal | guardia | auth | subscription
 
-   extra: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+      extra: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     # Datos adicionales: {"scan_type": "xray", "urgency": "high", "tokens": 420}
 
     # ── Rendimiento ────────────────────────────────────────────
