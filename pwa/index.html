@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Medix AI">
+  <meta name="theme-color" content="#0a0f1e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Medix AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0f1e;
+      --bg-surface: #111827;
+      --bg-elevated: #1a2234;
+      --blue: #3b82f6;
+      --blue-dark: #1d4ed8;
+      --blue-light: #60a5fa;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --border: #1e293b;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── Screens ── */
+    .screen { display: none; min-height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ── Splash ── */
+    #splash {
+      background: linear-gradient(135deg, #0a0f1e 0%, #0f172a 50%, #0a0f1e 100%);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .splash-content { text-align: center; }
+
+    .splash-icon {
+      width: 90px; height: 90px;
+      background: rgba(59,130,246,0.15);
+      border: 2px solid rgba(59,130,246,0.3);
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 42px;
+      animation: pulse 2s infinite;
+    }
+
+    .splash-title { font-size: 32px; font-weight: 700; margin-bottom: 6px; }
+    .splash-sub { color: var(--text-secondary); font-size: 14px; margin-bottom: 40px; }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2.5px solid rgba(59,130,246,0.2);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    /* ── Auth ── */
+    #auth {
+      background: var(--bg-primary);
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .auth-header {
+      text-align: center;
+      padding: 60px 32px 32px;
+    }
+
+    .auth-logo {
+      width: 72px; height: 72px;
+      background: rgba(59,130,246,0.15);
+      border: 2px solid rgba(59,130,246,0.4);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 34px;
+    }
+
+    .auth-title { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .auth-sub { color: var(--text-secondary); font-size: 14px; }
+
+    .auth-tabs {
+      display: flex;
+      margin: 0 24px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .auth-tab {
+      flex: 1; padding: 10px;
+      border: none; background: transparent;
+      color: var(--text-secondary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    .auth-form { padding: 24px; }
+    .auth-form.hidden { display: none; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: var(--blue); }
+
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    .role-selector { display: flex; flex-direction: column; gap: 8px; }
+
+    .role-option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .role-option.selected {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.1);
+    }
+
+    .role-option span { font-size: 20px; }
+    .role-option-text { flex: 1; }
+    .role-option-title { font-size: 14px; font-weight: 600; }
+    .role-check { color: var(--blue); font-size: 18px; opacity: 0; transition: opacity 0.2s; }
+    .role-option.selected .role-check { opacity: 1; }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-success { background: var(--success); color: white; }
+
+    .auth-footer {
+      text-align: center;
+      padding: 16px 24px 40px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .auth-roles {
+      display: flex; justify-content: center; gap: 20px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .role-chip { text-align: center; }
+    .role-chip-icon {
+      width: 44px; height: 44px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 6px;
+      font-size: 20px;
+    }
+
+    .role-chip-label { font-size: 10px; color: var(--text-secondary); }
+
+    .error-box {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: var(--danger);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ── App Shell ── */
+    #app {
+      background: var(--bg-primary);
+      padding-bottom: 70px;
+    }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%; max-width: 430px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 10px 0;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 10px;
+      gap: 4px;
+      transition: color 0.2s;
+      border: none; background: transparent;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .nav-item.active { color: var(--blue); }
+    .nav-item .nav-icon { font-size: 22px; }
+
+    /* ── Tab Content ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── AppBar ── */
+    .appbar {
+      display: flex; align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+    }
+
+    .appbar-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-right: 10px;
+    }
+
+    .appbar-title { font-size: 15px; font-weight: 600; }
+    .appbar-sub { font-size: 11px; color: var(--success); }
+    .appbar-actions { margin-left: auto; }
+
+    /* ── Dashboard ── */
+    .dashboard-content { padding: 20px; }
+
+    .welcome-card {
+      background: linear-gradient(135deg, rgba(59,130,246,0.8), #1d4ed8);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .welcome-greeting { color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 4px; }
+    .welcome-title { color: white; font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
+    .quick-btns { display: flex; gap: 8px; }
+
+    .quick-btn {
+      flex: 1;
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px;
+      background: rgba(255,255,255,0.2);
+      border: none; border-radius: 8px;
+      color: white; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: background 0.2s;
+    }
+
+    .quick-btn:hover { background: rgba(255,255,255,0.3); }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .module-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
+      min-height: 110px;
+    }
+
+    .module-card:active { transform: scale(0.97); }
+
+    .module-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: auto;
+    }
+
+    .module-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .module-sub { font-size: 11px; color: var(--text-muted); }
+
+    .disclaimer {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex; gap: 10px;
+      align-items: flex-start;
+    }
+
+    .disclaimer-icon { font-size: 18px; flex-shrink: 0; }
+    .disclaimer-text { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Chat ── */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: calc(100vh - 200px);
+    }
+
+    .chat-empty {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+    }
+
+    .chat-empty-icon {
+      width: 80px; height: 80px;
+      background: rgba(59,130,246,0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .chat-empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .chat-empty-sub { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+
+    .msg { max-width: 85%; }
+    .msg-user { align-self: flex-end; }
+    .msg-ai { align-self: flex-start; }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .msg-user .msg-bubble {
+      background: var(--blue);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-ai .msg-bubble {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      color: var(--text-primary);
+    }
+
+    .msg-error .msg-bubble {
+      background: rgba(239,68,68,0.1);
+      border-color: rgba(239,68,68,0.3);
+      color: var(--danger);
+    }
+
+    .msg-tokens { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+    .typing-indicator {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+    }
+
+    .typing-dots { display: flex; gap: 4px; }
+    .typing-dot {
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    .chat-input-area {
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+      line-height: 1.4;
+    }
+
+    .chat-input:focus { border-color: var(--blue); }
+
+    .send-btn {
+      width: 46px; height: 46px;
+      background: var(--blue);
+      border: none; border-radius: 12px;
+      color: white; font-size: 20px;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .send-btn:disabled { background: var(--text-muted); cursor: not-allowed; }
+
+    /* ── Modo Guardia ── */
+    .calc-tabs {
+      display: flex; overflow-x: auto;
+      padding: 12px 16px;
+      gap: 8px;
+      scrollbar-width: none;
+    }
+
+    .calc-tabs::-webkit-scrollbar { display: none; }
+
+    .calc-tab {
+      padding: 8px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; white-space: nowrap;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .calc-tab.active {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white; font-weight: 600;
+    }
+
+    .calc-content { padding: 20px; }
+    .calc-panel { display: none; }
+    .calc-panel.active { display: block; }
+
+    .calc-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .calc-sub { color: var(--text-secondary); font-size: 13px; margin-bottom: 20px; }
+
+    .calc-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .calc-input:focus { border-color: var(--danger); }
+
+    .result-box {
+      width: 100%;
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .result-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+    .result-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+    .result-sub { font-size: 14px; font-weight: 600; }
+
+    .scale-row { margin-bottom: 16px; }
+    .scale-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+    .scale-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    .score-btns { display: flex; gap: 8px; }
+    .score-btn {
+      flex: 1; padding: 12px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .score-btn.active {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    .progress-bar-wrap {
+      height: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+
+    .ref-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .ref-title { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .ref-text { font-size: 11px; color: var(--text-muted); }
+
+    .doses-table { width: 100%; }
+    .dose-row {
+      display: flex; align-items: center;
+      padding: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .dose-name { font-weight: 600; font-size: 14px; }
+    .dose-info { font-size: 11px; color: var(--text-muted); }
+    .dose-value { margin-left: auto; text-align: right; }
+    .dose-mg { color: var(--blue); font-weight: 700; font-size: 16px; }
+    .dose-max { color: var(--warning); font-size: 10px; }
+
+    /* ── SESAL ── */
+    .sesal-content { padding: 16px; }
+
+    .sesal-header {
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex; gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .sesal-search {
+      display: flex; gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .sesal-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .sesal-input:focus { border-color: var(--cyan); }
+
+    .sesal-btn {
+      width: 46px; height: 46px;
+      background: var(--cyan);
+      border: none; border-radius: var(--radius-sm);
+      color: white; font-size: 20px;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    .quick-queries {
+      display: flex; overflow-x: auto;
+      gap: 8px; margin-bottom: 16px;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .quick-queries::-webkit-scrollbar { display: none; }
+
+    .quick-query {
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 12px; white-space: nowrap;
+      cursor: pointer; transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .quick-query:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .sesal-result {
+      background: var(--bg-surface);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    /* ── Profile ── */
+    .profile-content { padding: 20px; }
+
+    .profile-avatar {
+      width: 80px; height: 80px;
+      background: rgba(59,130,246,0.15);
+      border: 2px solid rgba(59,130,246,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 12px;
+    }
+
+    .profile-name { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .profile-email { text-align: center; color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+
+    .plan-badge {
+      display: inline-flex;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px; font-weight: 600;
+      margin: 0 auto 28px;
+    }
+
+    .section-title {
+      font-size: 14px; font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .setting-tile {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .setting-icon { font-size: 20px; }
+    .setting-label { font-size: 14px; flex: 1; }
+    .setting-arrow { color: var(--text-muted); }
+
+    .offline-banner {
+      background: rgba(239,68,68,0.1);
+      padding: 10px 16px;
+      display: flex; gap: 8px; align-items: center;
+      font-size: 12px; color: var(--danger);
+    }
+
+    /* ── Install Banner ── */
+    .install-banner {
+      background: linear-gradient(135deg, rgba(59,130,246,0.9), #1d4ed8);
+      padding: 14px 20px;
+      display: none; align-items: center; gap: 12px;
+      position: sticky; top: 0; z-index: 200;
+    }
+
+    .install-banner.show { display: flex; }
+    .install-banner-text { flex: 1; font-size: 13px; color: white; }
+    .install-banner-text strong { display: block; font-size: 14px; }
+    .install-btn {
+      padding: 8px 14px;
+      background: white; color: var(--blue);
+      border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.3); } 50% { box-shadow: 0 0 0 10px rgba(59,130,246,0); } }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .slide-up { animation: slideUp 0.3s ease; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 90px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 13px;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ── Install Banner ── -->
+<div class="install-banner" id="installBanner">
+  <span style="font-size:24px">📱</span>
+  <div class="install-banner-text">
+    <strong>Instalar Medix AI</strong>
+    Agrega al inicio para acceso rápido
+  </div>
+  <button class="install-btn" onclick="installApp()">Instalar</button>
+  <button onclick="document.getElementById('installBanner').classList.remove('show')" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:0 4px">×</button>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── SPLASH ── -->
+<div class="screen active" id="splash">
+  <div class="splash-content">
+    <div class="splash-icon">🏥</div>
+    <div class="splash-title">Medix AI</div>
+    <div class="splash-sub">Plataforma médica • Honduras</div>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- ── AUTH ── -->
+<div class="screen" id="auth">
+  <div class="auth-header">
+    <div class="auth-logo">🏥</div>
+    <div class="auth-title">Medix AI</div>
+    <div class="auth-sub">Tu asistente médico inteligente</div>
+  </div>
+
+  <div class="auth-tabs">
+    <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar sesión</button>
+    <button class="auth-tab" onclick="switchAuthTab('register')">Crear cuenta</button>
+  </div>
+
+  <!-- Login Form -->
+  <div class="auth-form" id="loginForm">
+    <div class="error-box" id="loginError"></div>
+    <div class="form-group">
+      <label class="form-label">Correo electrónico</label>
+      <input type="email" class="form-input" id="loginEmail" placeholder="doctor@hospital.hn">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input type="password" class="form-input" id="loginPass" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" id="loginBtn">Ingresar</button>
+  </div>
+
+  <!-- Register Form -->
+  <div class="auth-form hidden" id="registerForm">
+    <div class="error-box" id="registerError"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-input" id="regFirstName" placeholder="Juan">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Apellido</label>
+        <input type="text" class="form-input" id="regLastName" placeholder="Pérez">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Correo electrónico</label>
+      <input type="email" class="form-input" id="regEmail" placeholder="doctor@hospital.hn">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input type="password" class="form-input" id="regPass" placeholder="Mínimo 8 caracteres">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Rol</label>
+      <div class="role-selector">
+        <div class="role-option selected" onclick="selectRole('student', this)">
+          <span>👨‍🎓</span>
+          <div class="role-option-text">
+            <div class="role-option-title">Estudiante de Medicina</div>
+          </div>
+          <span class="role-check">✓</span>
+        </div>
+        <div class="role-option" onclick="selectRole('medico_general', this)">
+          <span>🏥</span>
+          <div class="role-option-text">
+            <div class="role-option-title">Médico General</div>
+          </div>
+          <span class="role-check">✓</span>
+        </div>
+        <div class="role-option" onclick="selectRole('medico_especialista', this)">
+          <span>🔬</span>
+          <div class="role-option-text">
+            <div class="role-option-title">Médico Especialista</div>
+          </div>
+          <span class="role-check">✓</span>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doRegister()" id="registerBtn">Crear mi cuenta</button>
+  </div>
+
+  <div class="auth-roles">
+    <div class="role-chip">
+      <div class="role-chip-icon">🎓</div>
+      <div class="role-chip-label">UNAH / UNICAH</div>
+    </div>
+    <div class="role-chip">
+      <div class="role-chip-icon">🏥</div>
+      <div class="role-chip-label">Médico General</div>
+    </div>
+    <div class="role-chip">
+      <div class="role-chip-icon">🔬</div>
+      <div class="role-chip-label">Especialista</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div class="screen" id="app">
+
+  <!-- Dashboard Tab -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="appbar">
+      <div class="appbar-icon" style="background:rgba(59,130,246,0.15)">🏥</div>
+      <div>
+        <div class="appbar-title">Medix AI</div>
+      </div>
+      <div class="appbar-actions">
+        <button style="background:none;border:none;color:var(--text-secondary);font-size:22px;cursor:pointer">🔔</button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="welcome-card">
+        <div class="welcome-greeting">Bienvenido, Doctor 👋</div>
+        <div class="welcome-title">¿En qué te ayudo hoy?</div>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="switchTab('chat')">💬 Chat IA</button>
+          <button class="quick-btn" onclick="switchTab('guardia')">🏥 Guardia</button>
+          <button class="quick-btn" onclick="switchTab('sesal')">📋 SESAL</button>
+        </div>
+      </div>
+
+      <div class="modules-grid">
+        <div class="module-card" onclick="switchTab('chat')">
+          <div class="module-icon" style="background:rgba(59,130,246,0.15)">🤖</div>
+          <div class="module-title">Chat IA Médico</div>
+          <div class="module-sub">Consultas contextualizadas</div>
+        </div>
+        <div class="module-card" onclick="showToast('MedScan disponible en la app Android')">
+          <div class="module-icon" style="background:rgba(139,92,246,0.15)">🔬</div>
+          <div class="module-title">MedScan</div>
+          <div class="module-sub">Análisis de imágenes</div>
+        </div>
+        <div class="module-card" onclick="showToast('SOAP disponible en la app Android')">
+          <div class="module-icon" style="background:rgba(16,185,129,0.15)">🎤</div>
+          <div class="module-title">Dictado SOAP</div>
+          <div class="module-sub">Notas de evolución</div>
+        </div>
+        <div class="module-card" onclick="switchTab('guardia')">
+          <div class="module-icon" style="background:rgba(239,68,68,0.15)">🚨</div>
+          <div class="module-title">Modo Guardia</div>
+          <div class="module-sub">Calculadoras offline</div>
+        </div>
+        <div class="module-card" onclick="showToast('ECOE disponible en la app Android')">
+          <div class="module-icon" style="background:rgba(245,158,11,0.15)">🎭</div>
+          <div class="module-title">Simulador ECOE</div>
+          <div class="module-sub">Pacientes virtuales</div>
+        </div>
+        <div class="module-card" onclick="switchTab('sesal')">
+          <div class="module-icon" style="background:rgba(6,182,212,0.15)">📋</div>
+          <div class="module-title">Normas SESAL</div>
+          <div class="module-sub">Protocolos Honduras</div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <div class="disclaimer-icon">ℹ️</div>
+        <div class="disclaimer-text">Medix AI asiste la decisión clínica. El criterio final siempre es del médico responsable.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Tab -->
+  <div class="tab-content" id="tab-chat" style="display:flex;flex-direction:column;height:calc(100vh - 70px)">
+    <div class="appbar">
+      <div class="appbar-icon" style="background:rgba(59,130,246,0.15)">🤖</div>
+      <div>
+        <div class="appbar-title">Chat IA Médico</div>
+        <div class="appbar-sub">Conectado</div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty" id="chatEmpty">
+        <div class="chat-empty-icon">🤖</div>
+        <div class="chat-empty-title">Medix AI listo</div>
+        <div class="chat-empty-sub">Consulta sobre medicamentos, diagnósticos, protocolos o estudios de laboratorio.</div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Haz una consulta médica..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- Guardia Tab -->
+  <div class="tab-content" id="tab-guardia">
+    <div class="appbar">
+      <div class="appbar-icon" style="background:rgba(239,68,68,0.15)">🚨</div>
+      <div>
+        <div class="appbar-title">Modo Guardia</div>
+        <div class="appbar-sub" style="color:var(--success)">100% Offline</div>
+      </div>
+    </div>
+    <div class="offline-banner">
+      📡 Calculadoras activas sin internet — Ideal para zonas rurales y turnos nocturnos
+    </div>
+    <div class="calc-tabs">
+      <button class="calc-tab active" onclick="switchCalc('holiday', this)">Holiday-Segar</button>
+      <button class="calc-tab" onclick="switchCalc('glasgow', this)">Glasgow</button>
+      <button class="calc-tab" onclick="switchCalc('apgar', this)">APGAR</button>
+      <button class="calc-tab" onclick="switchCalc('dosis', this)">Dosis Ped.</button>
+      <button class="calc-tab" onclick="switchCalc('silverman', this)">Silverman</button>
+      <button class="calc-tab" onclick="switchCalc('shock', this)">Shock Index</button>
+    </div>
+    <div class="calc-content">
+
+      <!-- Holiday-Segar -->
+      <div class="calc-panel active" id="calc-holiday">
+        <div class="calc-title">💧 Holiday-Segar</div>
+        <div class="calc-sub">Requerimiento basal de líquidos pediátricos</div>
+        <input type="number" class="calc-input" id="hs-weight" placeholder="Peso (kg)" oninput="calcHoliday()">
+        <div id="hs-result" style="display:none">
+          <div class="result-box" style="color:var(--blue);border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.1)">
+            <div class="result-label">REQUERIMIENTO DIARIO</div>
+            <div class="result-value" id="hs-ml">0 mL</div>
+            <div class="result-sub" id="hs-hr">0 mL/hora</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Glasgow -->
+      <div class="calc-panel" id="calc-glasgow">
+        <div class="calc-title">🧠 Glasgow</div>
+        <div class="calc-sub">Escala de coma de Glasgow (3-15)</div>
+        <div class="scale-row">
+          <div class="scale-label">Apertura ocular (E)</div>
+          <div class="score-btns" id="glasgow-E">
+            <button class="score-btn" onclick="setGlasgow('E',1,this)">1</button>
+            <button class="score-btn" onclick="setGlasgow('E',2,this)">2</button>
+            <button class="score-btn" onclick="setGlasgow('E',3,this)">3</button>
+            <button class="score-btn active" onclick="setGlasgow('E',4,this)">4</button>
+          </div>
+          <div class="scale-hint" id="hint-E">4 — Espontánea</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">Respuesta verbal (V)</div>
+          <div class="score-btns" id="glasgow-V">
+            <button class="score-btn" onclick="setGlasgow('V',1,this)">1</button>
+            <button class="score-btn" onclick="setGlasgow('V',2,this)">2</button>
+            <button class="score-btn" onclick="setGlasgow('V',3,this)">3</button>
+            <button class="score-btn" onclick="setGlasgow('V',4,this)">4</button>
+            <button class="score-btn active" onclick="setGlasgow('V',5,this)">5</button>
+          </div>
+          <div class="scale-hint" id="hint-V">5 — Orientado</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">Respuesta motora (M)</div>
+          <div class="score-btns" id="glasgow-M">
+            <button class="score-btn" onclick="setGlasgow('M',1,this)">1</button>
+            <button class="score-btn" onclick="setGlasgow('M',2,this)">2</button>
+            <button class="score-btn" onclick="setGlasgow('M',3,this)">3</button>
+            <button class="score-btn" onclick="setGlasgow('M',4,this)">4</button>
+            <button class="score-btn" onclick="setGlasgow('M',5,this)">5</button>
+            <button class="score-btn active" onclick="setGlasgow('M',6,this)">6</button>
+          </div>
+          <div class="scale-hint" id="hint-M">6 — Obedece órdenes</div>
+        </div>
+        <div id="glasgow-result">
+          <div class="result-box" id="glasgow-box" style="color:var(--success);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">
+            <div class="result-label">GLASGOW TOTAL</div>
+            <div class="result-value" id="glasgow-total">15</div>
+            <div class="result-sub" id="glasgow-interp">LEVE — Monitoreo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APGAR -->
+      <div class="calc-panel" id="calc-apgar">
+        <div class="calc-title">👶 APGAR</div>
+        <div class="calc-sub">Evaluación del recién nacido (0-10)</div>
+        <div id="apgar-rows"></div>
+        <div class="result-box" id="apgar-box" style="color:var(--success);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">
+          <div class="result-label">SCORE APGAR</div>
+          <div class="result-value" id="apgar-total">10</div>
+          <div class="result-sub" id="apgar-interp">Normal (sin asfixia)</div>
+        </div>
+      </div>
+
+      <!-- Dosis Pediátricas -->
+      <div class="calc-panel" id="calc-dosis">
+        <div class="calc-title">💊 Dosis Pediátricas</div>
+        <div class="calc-sub">Medicamentos urgentes por peso</div>
+        <input type="number" class="calc-input" id="dosis-weight" placeholder="Peso del paciente (kg)" oninput="calcDosis()">
+        <div id="dosis-result"></div>
+      </div>
+
+      <!-- Silverman -->
+      <div class="calc-panel" id="calc-silverman">
+        <div class="calc-title">🫁 Silverman-Andersen</div>
+        <div class="calc-sub">Dificultad respiratoria neonatal (0-10)</div>
+        <div id="silverman-rows"></div>
+        <div class="result-box" id="silverman-box" style="color:var(--success);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">
+          <div class="result-label">PUNTAJE SILVERMAN-ANDERSEN</div>
+          <div class="result-value" id="silverman-total">0 / 10</div>
+          <div class="result-sub" id="silverman-interp">SIN dificultad respiratoria</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="silverman-bar" style="width:0%;background:var(--success)"></div>
+          </div>
+        </div>
+        <div class="ref-box">
+          <div class="ref-title">Referencia rápida</div>
+          <div class="ref-text">0 = Sin DR &nbsp;•&nbsp; 1–3 = Leve &nbsp;•&nbsp; 4–6 = Moderada &nbsp;•&nbsp; 7–10 = Severa</div>
+        </div>
+      </div>
+
+      <!-- Shock Index -->
+      <div class="calc-panel" id="calc-shock">
+        <div class="calc-title">❤️ Shock Index</div>
+        <div class="calc-sub">FC / PAS — Marcador de hipoperfusión</div>
+        <div style="display:flex;gap:12px">
+          <input type="number" class="calc-input" id="shock-hr" placeholder="FC (lpm)" style="flex:1" oninput="calcShock()">
+          <input type="number" class="calc-input" id="shock-sbp" placeholder="PAS (mmHg)" style="flex:1" oninput="calcShock()">
+        </div>
+        <div id="shock-result" style="display:none">
+          <div class="result-box" id="shock-box" style="color:var(--success);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">
+            <div class="result-label">SHOCK INDEX</div>
+            <div class="result-value" id="shock-value">0.0</div>
+            <div class="result-sub" id="shock-interp">Normal</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SESAL Tab -->
+  <div class="tab-content" id="tab-sesal">
+    <div class="appbar">
+      <div class="appbar-icon" style="background:rgba(6,182,212,0.15)">📋</div>
+      <div>
+        <div class="appbar-title">Normas SESAL</div>
+        <div class="appbar-sub" style="color:var(--cyan)">Honduras oficial</div>
+      </div>
+    </div>
+    <div class="sesal-content">
+      <div class="sesal-header">
+        <span>✅</span>
+        <span style="font-size:12px;color:var(--cyan)">Respuestas basadas en guías clínicas oficiales de la Secretaría de Salud de Honduras (SESAL).</span>
+      </div>
+      <div class="sesal-search">
+        <input type="text" class="sesal-input" id="sesalInput" placeholder="Consulta un protocolo o norma..." onkeydown="if(event.key==='Enter')querySESAL()">
+        <button class="sesal-btn" onclick="querySESAL()" id="sesalBtn">➤</button>
+      </div>
+      <div class="quick-queries">
+        <div class="quick-query" onclick="sesalQuick(this)">Dengue hemorrágico</div>
+        <div class="quick-query" onclick="sesalQuick(this)">Dosis amoxicilina pediátrica</div>
+        <div class="quick-query" onclick="sesalQuick(this)">Crisis hipertensiva</div>
+        <div class="quick-query" onclick="sesalQuick(this)">Malaria zona rural</div>
+        <div class="quick-query" onclick="sesalQuick(this)">Control prenatal</div>
+        <div class="quick-query" onclick="sesalQuick(this)">Tuberculosis primera línea</div>
+      </div>
+      <div id="sesalResult" style="display:none">
+        <div class="sesal-result" id="sesalText"></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">⚕️ Información basada en guías SESAL. Siempre valida con la versión vigente del documento oficial.</div>
+        <button onclick="resetSESAL()" style="margin-top:12px;background:none;border:none;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">🔄 Nueva consulta</button>
+      </div>
+      <div id="sesalLoading" style="display:none;text-align:center;padding:40px">
+        <div class="spinner" style="margin:0 auto 12px"></div>
+        <div style="color:var(--text-secondary);font-size:13px">Consultando normas SESAL...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Tab -->
+  <div class="tab-content" id="tab-profile">
+    <div class="appbar">
+      <div class="appbar-title">Perfil</div>
+    </div>
+    <div class="profile-content">
+      <div class="profile-avatar">👤</div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-email" id="profileEmail">—</div>
+      <div style="text-align:center;margin-bottom:28px">
+        <span class="plan-badge" id="profileBadge" style="background:rgba(100,116,139,0.2);color:var(--text-muted)">FREE</span>
+      </div>
+
+      <div class="section-title">Mi Plan</div>
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+          <span style="font-weight:700;font-size:16px">Plan Free</span>
+          <span style="color:var(--text-secondary)">L 0 / mes</span>
+        </div>
+        <div style="font-size:13px;line-height:2">
+          ✅ 20 mensajes de chat / día<br>
+          ✅ Modo Guardia offline<br>
+          ✅ Normas SESAL<br>
+          ❌ Dictado SOAP<br>
+          ❌ MedScan<br>
+        </div>
+        <button class="btn btn-primary" style="margin-top:14px" onclick="showToast('Próximamente disponible en Honduras 🇭🇳')">Mejorar a Pro — L 299/mes</button>
+      </div>
+
+      <div class="section-title">Configuración</div>
+      <div class="setting-tile" onclick="showToast('Próximamente')">
+        <span class="setting-icon">🎓</span>
+        <span class="setting-label">Universidad y período</span>
+        <span class="setting-arrow">›</span>
+      </div>
+      <div class="setting-tile" onclick="showToast('Próximamente')">
+        <span class="setting-icon">🔔</span>
+        <span class="setting-label">Notificaciones</span>
+        <span class="setting-arrow">›</span>
+      </div>
+      <div class="setting-tile" onclick="showToast('Próximamente')">
+        <span class="setting-icon">🔒</span>
+        <span class="setting-label">Cambiar contraseña</span>
+        <span class="setting-arrow">›</span>
+      </div>
+      <div class="setting-tile" onclick="showToast('soporte@medix.hn')">
+        <span class="setting-icon">💬</span>
+        <span class="setting-label">Soporte</span>
+        <span class="setting-arrow">›</span>
+      </div>
+
+      <button class="btn btn-danger" style="margin-top:20px" onclick="doLogout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">🏠</span>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('chat')" id="nav-chat">
+      <span class="nav-icon">💬</span>
+      <span>Chat IA</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('guardia')" id="nav-guardia">
+      <span class="nav-icon">🚨</span>
+      <span>Guardia</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('sesal')" id="nav-sesal">
+      <span class="nav-icon">📋</span>
+      <span>SESAL</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('profile')" id="nav-profile">
+      <span class="nav-icon">👤</span>
+      <span>Perfil</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+const API = 'https://medix-ai-production.up.railway.app/api/v1';
+let token = localStorage.getItem('jwt_token');
+let sessionId = null;
+let selectedRole = 'student';
+let chatMessages = [];
+
+// ── State ──────────────────────────────────────────────────────
+const glasgowScores = { E: 4, V: 5, M: 6 };
+const glasgowHints = {
+  E: ['','Ninguna','Dolor','Verbal','Espontánea'],
+  V: ['','Ninguna','Sonidos','Palabras','Confuso','Orientado'],
+  M: ['','Ninguna','Extensión','Flexión','Retirada','Localiza','Obedece'],
+};
+const apgarCriteria = [
+  { label: 'FC', hints: ['Sin FC','<100','≥100'] },
+  { label: 'Respiración', hints: ['Ausente','Irregular','Llanto fuerte'] },
+  { label: 'Tono muscular', hints: ['Flácido','Alguna flex.','Movimiento activo'] },
+  { label: 'Reflejos', hints: ['Sin resp.','Mueca','Estornudo/tos'] },
+  { label: 'Color', hints: ['Azul/pálido','Extremidades azules','Rosado'] },
+];
+const apgarScores = [2,2,2,2,1];
+
+const silvermanCriteria = [
+  { label: 'Quejido espiratorio', hints: ['Ausente','Audible c/estetoscopio','Audible sin estetoscopio'] },
+  { label: 'Retracción xifoidea', hints: ['Ausente','Apenas visible','Marcada'] },
+  { label: 'Tiraje intercostal', hints: ['Ausente','Apenas visible','Marcado'] },
+  { label: 'Aleteo nasal', hints: ['Ausente','Mínimo','Marcado'] },
+  { label: 'Disociación tóraco-abdominal', hints: ['Sincrónico','Retraso inspiratorio','Balanceo (seesaw)'] },
+];
+const silvermanScores = [0,0,0,0,0];
+
+const meds = [
+  { name: 'Acetaminofén', dose: 15, unit: 'mg/kg/dosis', max: 1000, freq: 'c/6-8h' },
+  { name: 'Ibuprofeno', dose: 10, unit: 'mg/kg/dosis', max: 400, freq: 'c/8h' },
+  { name: 'Amoxicilina', dose: 25, unit: 'mg/kg/día', max: 500, freq: 'c/8h' },
+  { name: 'Diazepam IV', dose: 0.2, unit: 'mg/kg/dosis', max: 10, freq: 'PRN' },
+  { name: 'Adrenalina', dose: 0.01, unit: 'mg/kg', max: 1, freq: 'PRN PCR' },
+  { name: 'Dexametasona', dose: 0.15, unit: 'mg/kg/dosis', max: 10, freq: 'c/6h' },
+];
+
+// ── PWA Install ────────────────────────────────────────────────
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('show');
+    });
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  initAPGAR();
+  initSilverman();
+  setTimeout(async () => {
+    if (token) {
+      await loadProfile();
+      showScreen('app');
+    } else {
+      showScreen('auth');
+    }
+  }, 1500);
+});
+
+// ── Screens ────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Auth ───────────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
+  });
+  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+}
+
+function selectRole(role, el) {
+  selectedRole = role;
+  document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  if (!email || !pass) { showError('loginError', 'Completa todos los campos'); return; }
+  btn.disabled = true; btn.textContent = 'Ingresando...';
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error al iniciar sesión');
+    token = data.access_token;
+    localStorage.setItem('jwt_token', token);
+    await loadProfile();
+    showScreen('app');
+  } catch(e) {
+    showError('loginError', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Ingresar';
+  }
+}
+
+async function doRegister() {
+  const firstName = document.getElementById('regFirstName').value.trim();
+  const lastName = document.getElementById('regLastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const btn = document.getElementById('registerBtn');
+  if (!firstName||!lastName||!email||!pass) { showError('registerError','Completa todos los campos'); return; }
+  if (pass.length < 8) { showError('registerError','Contraseña mínimo 8 caracteres'); return; }
+  btn.disabled = true; btn.textContent = 'Creando cuenta...';
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password: pass, role: selectedRole })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error al registrar');
+    token = data.access_token;
+    localStorage.setItem('jwt_token', token);
+    await loadProfile();
+    showScreen('app');
+  } catch(e) {
+    showError('registerError', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear mi cuenta';
+  }
+}
+
+function doLogout() {
+  token = null; sessionId = null;
+  localStorage.removeItem('jwt_token');
+  showScreen('auth');
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── Profile ────────────────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const res = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error();
+    const user = await res.json();
+    document.getElementById('profileName').textContent = `${user.first_name} ${user.last_name}`;
+    document.getElementById('profileEmail').textContent = user.email;
+    const tier = user.subscription_tier || 'free';
+    const badge = document.getElementById('profileBadge');
+    badge.textContent = tier.toUpperCase();
+    if (tier === 'pro') { badge.style.background='rgba(59,130,246,0.2)'; badge.style.color='var(--blue)'; }
+    else if (tier === 'clinical') { badge.style.background='rgba(139,92,246,0.2)'; badge.style.color='var(--purple)'; }
+    document.getElementById('profileName') && 
+      (document.querySelector('.welcome-greeting').textContent = `Bienvenido, Dr. ${user.first_name} 👋`);
+  } catch(e) { /* fail silently */ }
+}
+
+// ── Navigation ─────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`nav-${tab}`).classList.add('active');
+}
+
+// ── Chat ───────────────────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; autoResize(input);
+  document.getElementById('chatEmpty').style.display = 'none';
+  appendMessage(text, 'user');
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  showTyping();
+  try {
+    const res = await fetch(`${API}/analysis/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ message: text, session_id: sessionId, mode: 'chat' })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    sessionId = data.session_id;
+    hideTyping();
+    appendMessage(data.response, 'ai', data.tokens_used);
+  } catch(e) {
+    hideTyping();
+    appendMessage('⚠️ Error de conexión. Verifica tu internet.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function appendMessage(text, type, tokens) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg msg-${type === 'error' ? 'ai msg-error' : type} slide-up`;
+  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>
+    ${tokens ? `<div class="msg-tokens">${tokens} tokens</div>` : ''}`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.id = 'typing';
+  div.className = 'msg msg-ai';
+  div.innerHTML = `<div class="typing-indicator">
+    <div class="typing-dots">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+    <span style="font-size:13px;color:var(--text-secondary)">Medix AI procesando...</span>
+  </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ── Guardia ────────────────────────────────────────────────────
+function switchCalc(name, btn) {
+  document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`calc-${name}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+function calcHoliday() {
+  const w = parseFloat(document.getElementById('hs-weight').value) || 0;
+  if (w <= 0) { document.getElementById('hs-result').style.display='none'; return; }
+  let ml;
+  if (w <= 10) ml = w * 100;
+  else if (w <= 20) ml = 1000 + (w-10)*50;
+  else ml = 1500 + (w-20)*20;
+  document.getElementById('hs-ml').textContent = `${Math.round(ml)} mL/día`;
+  document.getElementById('hs-hr').textContent = `${(ml/24).toFixed(1)} mL/hora`;
+  document.getElementById('hs-result').style.display = 'block';
+}
+
+function setGlasgow(scale, val, btn) {
+  glasgowScores[scale] = val;
+  document.querySelectorAll(`#glasgow-${scale} .score-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`hint-${scale}`).textContent = `${val} — ${glasgowHints[scale][val]}`;
+  updateGlasgow();
+}
+
+function updateGlasgow() {
+  const total = glasgowScores.E + glasgowScores.V + glasgowScores.M;
+  document.getElementById('glasgow-total').textContent = total;
+  const box = document.getElementById('glasgow-box');
+  let color, interp;
+  if (total <= 8) { color='var(--danger)'; interp='GRAVE — Considerar intubación'; }
+  else if (total <= 12) { color='var(--warning)'; interp='MODERADO — Observación estricta'; }
+  else { color='var(--success)'; interp='LEVE — Monitoreo'; }
+  document.getElementById('glasgow-interp').textContent = interp;
+  box.style.color = color;
+  box.style.borderColor = color.replace(')',',0.3)').replace('var(','rgba(').replace('--danger','239,68,68').replace('--warning','245,158,11').replace('--success','16,185,129');
+}
+
+function initAPGAR() {
+  const container = document.getElementById('apgar-rows');
+  apgarCriteria.forEach((c, ci) => {
+    const row = document.createElement('div');
+    row.className = 'scale-row';
+    row.innerHTML = `<div class="scale-label">${c.label}</div>
+      <div class="score-btns">
+        ${[0,1,2].map(v => `<button class="score-btn ${apgarScores[ci]===v?'active':''}" 
+          onclick="setAPGAR(${ci},${v},this)">${v}</button>`).join('')}
+      </div>
+      <div class="scale-hint" id="apgar-hint-${ci}">${apgarScores[ci]} — ${c.hints[apgarScores[ci]]}</div>`;
+    container.appendChild(row);
+  });
+  updateAPGAR();
+}
+
+function setAPGAR(ci, val, btn) {
+  apgarScores[ci] = val;
+  document.querySelectorAll(`#apgar-rows .scale-row:nth-child(${ci+1}) .score-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`apgar-hint-${ci}`).textContent = `${val} — ${apgarCriteria[ci].hints[val]}`;
+  updateAPGAR();
+}
+
+function updateAPGAR() {
+  const total = apgarScores.reduce((a,b) => a+b, 0);
+  document.getElementById('apgar-total').textContent = `${total}/10`;
+  const box = document.getElementById('apgar-box');
+  let color, interp;
+  if (total >= 7) { color='var(--success)'; interp='Normal (sin asfixia)'; }
+  else if (total >= 4) { color='var(--warning)'; interp='Depresión moderada'; }
+  else { color='var(--danger)'; interp='Depresión severa'; }
+  document.getElementById('apgar-interp').textContent = interp;
+  box.style.color = color;
+}
+
+function calcDosis() {
+  const w = parseFloat(document.getElementById('dosis-weight').value) || 0;
+  const container = document.getElementById('dosis-result');
+  if (w <= 0) { container.innerHTML = ''; return; }
+  container.innerHTML = meds.map(m => {
+    const calc = m.dose * w;
+    const dosis = Math.min(calc, m.max);
+    const isMax = calc > m.max;
+    return `<div class="dose-row">
+      <div>
+        <div class="dose-name">${m.name}</div>
+        <div class="dose-info">${m.dose} ${m.unit} — ${m.freq}</div>
+      </div>
+      <div class="dose-value">
+        <div class="dose-mg">${dosis.toFixed(1)} mg</div>
+        ${isMax ? '<div class="dose-max">(máx)</div>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function initSilverman() {
+  const container = document.getElementById('silverman-rows');
+  silvermanCriteria.forEach((c, ci) => {
+    const row = document.createElement('div');
+    row.className = 'scale-row';
+    row.innerHTML = `<div class="scale-label">${c.label}</div>
+      <div class="score-btns">
+        ${[0,1,2].map(v => `<button class="score-btn ${silvermanScores[ci]===v?'active':''}"
+          onclick="setSilverman(${ci},${v},this)">${v}</button>`).join('')}
+      </div>
+      <div class="scale-hint" id="sv-hint-${ci}">${silvermanScores[ci]} — ${c.hints[silvermanScores[ci]]}</div>`;
+    container.appendChild(row);
+  });
+  updateSilverman();
+}
+
+function setSilverman(ci, val, btn) {
+  silvermanScores[ci] = val;
+  document.querySelectorAll(`#silverman-rows .scale-row:nth-child(${ci+1}) .score-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`sv-hint-${ci}`).textContent = `${val} — ${silvermanCriteria[ci].hints[val]}`;
+  updateSilverman();
+}
+
+function updateSilverman() {
+  const total = silvermanScores.reduce((a,b) => a+b, 0);
+  document.getElementById('silverman-total').textContent = `${total} / 10`;
+  const box = document.getElementById('silverman-box');
+  const bar = document.getElementById('silverman-bar');
+  let color, interp;
+  if (total === 0) { color='var(--success)'; interp='SIN dificultad respiratoria'; }
+  else if (total <= 3) { color='var(--warning)'; interp='Dificultad respiratoria LEVE'; }
+  else if (total <= 6) { color='#ff8c00'; interp='Dificultad respiratoria MODERADA'; }
+  else { color='var(--danger)'; interp='Dificultad respiratoria SEVERA — ¡Actuar de inmediato!'; }
+  document.getElementById('silverman-interp').textContent = interp;
+  box.style.color = color;
+  bar.style.width = `${total*10}%`;
+  bar.style.background = color;
+}
+
+function calcShock() {
+  const hr = parseFloat(document.getElementById('shock-hr').value) || 0;
+  const sbp = parseFloat(document.getElementById('shock-sbp').value) || 0;
+  const result = document.getElementById('shock-result');
+  if (hr <= 0 || sbp <= 0) { result.style.display='none'; return; }
+  const si = hr / sbp;
+  document.getElementById('shock-value').textContent = si.toFixed(2);
+  let color, interp;
+  if (si < 0.6) { color='var(--success)'; interp='Normal'; }
+  else if (si < 1.0) { color='var(--warning)'; interp='Riesgo leve'; }
+  else if (si < 1.4) { color='var(--danger)'; interp='Shock moderado'; }
+  else { color='var(--danger)'; interp='Shock severo — Actuar AHORA'; }
+  document.getElementById('shock-interp').textContent = interp;
+  const box = document.getElementById('shock-box');
+  box.style.color = color;
+  result.style.display = 'block';
+}
+
+// ── SESAL ──────────────────────────────────────────────────────
+async function querySESAL() {
+  const query = document.getElementById('sesalInput').value.trim();
+  if (!query) return;
+  document.getElementById('sesalResult').style.display = 'none';
+  document.getElementById('sesalLoading').style.display = 'block';
+  document.getElementById('sesalBtn').disabled = true;
+  try {
+    const res = await fetch(`${API}/analysis/sesal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ query })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    document.getElementById('sesalText').textContent = data.response;
+    document.getElementById('sesalResult').style.display = 'block';
+  } catch(e) {
+    showToast('Error al consultar SESAL. Intenta de nuevo.');
+  } finally {
+    document.getElementById('sesalLoading').style.display = 'none';
+    document.getElementById('sesalBtn').disabled = false;
+  }
+}
+
+function sesalQuick(el) {
+  document.getElementById('sesalInput').value = el.textContent;
+  querySESAL();
+}
+
+function resetSESAL() {
+  document.getElementById('sesalResult').style.display = 'none';
+  document.getElementById('sesalInput').value = '';
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
