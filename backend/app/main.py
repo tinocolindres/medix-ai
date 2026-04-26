@@ -41,6 +41,7 @@ app = FastAPI(
 origins = ["*"] if settings.ENVIRONMENT == "development" else [
     "https://medix.hn",
     "https://app.medix.hn",
+    "https://medix-ai-504.netlify.app",
     "https://admin.medix.hn",
     "capacitor://localhost",
     "http://localhost",
