@@ -58,11 +58,11 @@ async def upload_scan(
     """
     # ── Rate limit para scans ─────────────────────────────────────────────────
     scan_limits = {
-        "free": settings.RATE_LIMIT_FREE_SCAN,
+        "free": 20,   # Aumentado temporalmente para fase beta (original: settings.RATE_LIMIT_FREE_SCAN)
         "pro": settings.RATE_LIMIT_PRO_SCAN,
         "clinical": settings.RATE_LIMIT_CLINICAL_SCAN,
     }
-    limit = scan_limits.get(current_user.subscription_tier, 3)
+    limit = scan_limits.get(current_user.subscription_tier, 20)
     if current_user.scan_count_today >= limit:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,

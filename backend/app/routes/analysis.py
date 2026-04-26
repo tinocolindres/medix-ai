@@ -154,11 +154,8 @@ async def soap_dictation(
     current_user: User = Depends(get_current_active_user),
 ):
     """Transforma dictado de voz a nota SOAP estructurada."""
-    if current_user.subscription_tier == "free":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="El Dictado SOAP requiere plan Pro o Clinical."
-        )
+    # SOAP disponible para todos los planes durante fase beta
+    _check_rate_limit(current_user)
 
     result = await llm_service.generate_soap_note(
         raw_dictation=payload.dictation,
