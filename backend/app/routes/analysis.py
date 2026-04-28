@@ -167,13 +167,41 @@ async def soap_dictation(
 @router.post("/ecoe/start", response_model=ECOEResponse)
 async def start_ecoe(
     payload: ECOEStartRequest,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Inicia simulación de paciente virtual para práctica ECOE/OSCE."""
     result = await llm_service.start_ecoe_simulation(case_id=payload.case_id)
+
+    # ── Crear sesión con contexto del paciente ────────────────────────────────
+    session = ChatSession(
+        user_id=current_user.id,
+        title=f"ECOE: {payload.case_id}",
+        mode="ecoe_simulator",
+    )
+    db.add(session)
+    await db.flush()
+
+    # Guardar el system prompt del paciente como primer mensaje del historial
+    system_msg = ChatMessage(
+        session_id=session.id,
+        sender_type="system",
+        message=result["system_prompt"],
+    )
+    # Guardar apertura del paciente como primer mensaje AI
+    opening_msg = ChatMessage(
+        session_id=session.id,
+        sender_type="ai",
+        message=result["patient_opening"],
+    )
+    db.add(system_msg)
+    db.add(opening_msg)
+    await db.flush()
+
     return ECOEResponse(
         case_id=result["case_id"],
         patient_opening=result["patient_opening"],
+        session_id=str(session.id),
     )
 
 

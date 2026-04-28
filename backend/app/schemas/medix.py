@@ -93,6 +93,7 @@ class ECOEStartRequest(BaseModel):
 class ECOEResponse(BaseModel):
     case_id: str
     patient_opening: str
+    session_id: Optional[str] = None
     instructions: str = "Interroga al paciente para llegar al diagnóstico"
 
 
