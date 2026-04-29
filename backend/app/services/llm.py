@@ -21,6 +21,7 @@ def build_system_prompt(
     subject_name: str = None,
     subject_ai_hint: str = None,
     specialty: str = None,
+    hospital: str = None,
     mode: str = "chat",
 ) -> str:
 
@@ -55,7 +56,22 @@ def build_system_prompt(
             "Evita fisiopatología larga salvo que se solicite.\n"
         )
 
-    elif user_role == "medico_especialista":
+    elif user_role == "medico_residente":
+        spec_info = f" de {specialty}" if specialty else ""
+        hosp_info = f" en {hospital}" if hospital else " en hospital público de Honduras"
+        context = (
+            f"**USUARIO:** Médico Residente{spec_info}{hosp_info}. "
+            f"Trátalo como colega médico en formación especializada — NO como estudiante.\n\n"
+            "**TU MISIÓN:** Respuestas directas, estructuradas y basadas en evidencia. "
+            "Usa la terminología y nomenclatura de la especialidad. "
+            "Incluye: criterios diagnósticos actualizados, escalas clínicas relevantes "
+            "(APACHE II, SOFA, qSOFA, Wells, CURB-65, etc.), dosis precisas del Cuadro Básico de Honduras, "
+            "y manejo según guías internacionales (AHA, IDSA, ACOG, etc.). "
+            "Si hay controversia en la literatura, menciónala. "
+            "Recuerda el contexto hospitalario hondureño (HEU, Catarino Rivas).\n"
+        )
+
+
         spec_info = f" ({specialty})" if specialty else ""
         context = (
             f"**USUARIO:** Médico Especialista{spec_info}. Trátalo como colega experto.\n\n"
