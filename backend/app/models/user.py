@@ -10,6 +10,7 @@ from app.db.session import Base
 
 class UserRole(str, enum.Enum):
     student = "student"
+    medico_residente = "medico_residente"
     medico_general = "medico_general"
     medico_especialista = "medico_especialista"
     admin = "admin"
@@ -49,6 +50,8 @@ class User(Base):
         UUID(as_uuid=False), ForeignKey("curriculum_periods.id"), nullable=True
     )
     specialty: Mapped[str | None] = mapped_column(String(150))  # Para médicos especialistas
+    residency_year: Mapped[str | None] = mapped_column(String(10))   # R1-R5
+    hospital: Mapped[str | None] = mapped_column(String(255))         # Hospital de residencia
 
     # Stripe
     stripe_customer_id: Mapped[str | None] = mapped_column(String(255))

@@ -12,10 +12,12 @@ class UserRegister(BaseModel):
     password: str
     first_name: str
     last_name: str
-    role: str = "student"          # student | medico_general | medico_especialista
+    role: str = "student"
     university_id: Optional[str] = None
     current_period_id: Optional[str] = None
     specialty: Optional[str] = None
+    residency_year: Optional[str] = None
+    hospital: Optional[str] = None
     phone: Optional[str] = None
 
     @field_validator("password")
