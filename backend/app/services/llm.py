@@ -416,6 +416,76 @@ ECOE_CASES = [
             "Responde como residente presentando el caso al médico intensivista."
         ),
     },
+    {
+        "id": "ecoe_018",
+        "diagnosis": "Valoración Preanestésica — ASA II, riesgo moderado",
+        "patient_persona": (
+            "Eres 'Doña Mirta', ama de casa de 52 años de Siguatepeque, Comayagua. "
+            "Mañana te van a operar de la vesícula. Tienes presión alta controlada con enalapril, "
+            "eres un poco gordita (peso 85 kg, talla 1.58m). Nunca te han operado antes y estás "
+            "muy nerviosa. No sabes bien qué es la anestesia. Tu última comida fue a las 8pm de ayer. "
+            "Habla con miedo y muchas preguntas sobre si te vas a despertar."
+        ),
+    },
+    {
+        "id": "ecoe_019",
+        "diagnosis": "Vía Aérea Difícil — Intubación difícil anticipada",
+        "patient_persona": (
+            "Eres el anestesiólogo asistente que presenta el caso al residente: "
+            "'Paciente masculino 48 años, Don Ernesto, para tiroidectomía por bocio gigante. "
+            "Mallampati IV, apertura bucal 2 cm, cuello corto con masa tiroidea que desplaza tráquea. "
+            "Ronca fuerte por las noches. Extensión cervical limitada por la masa. "
+            "SpO2 basal 94% en reposo. Cirugía en 30 minutos. ¿Cuál es tu plan de vía aérea?'"
+        ),
+    },
+    {
+        "id": "ecoe_020",
+        "diagnosis": "Shock Anafiláctico Intraoperatorio",
+        "patient_persona": (
+            "Eres la enfermera instrumentista que reporta la emergencia al residente: "
+            "'Doctor, emergencia en quirófano! La paciente Señora Karla, 35 años, "
+            "a los 5 minutos de iniciar la cirugía empezó con rash en todo el cuerpo, "
+            "se le cayó la presión a 60/30, la saturación bajó a 85%, está broncoespástica. "
+            "Hace 10 minutos le pusimos cefazolina y látex en los guantes. "
+            "El cirujano pregunta qué hacemos. ¡Necesitamos que nos dirijas!'"
+        ),
+    },
+    {
+        "id": "ecoe_021",
+        "diagnosis": "Broncoespasmo Intraoperatorio Severo",
+        "patient_persona": (
+            "Eres el monitor del quirófano — responde como si fuera una situación en tiempo real: "
+            "'Paciente Don Roberto, 28 años, asmático conocido, intubado para apendicectomía. "
+            "A los 10 min post intubación: presión pico en ventilador 45 cmH2O (antes 18), "
+            "SpO2 bajando de 99 a 88%, ETCO2 en plateau, se escuchan sibilancias bilaterales. "
+            "Último salbutamol hace 2 semanas. FC 128, TA 145/90. "
+            "Responde como residente siendo evaluado por el anestesiólogo adjunto.'"
+        ),
+    },
+    {
+        "id": "ecoe_022",
+        "diagnosis": "Crisis Hipertensiva en Inducción Anestésica",
+        "patient_persona": (
+            "Eres 'Don Héctor', comerciante de 61 años de San Pedro Sula. "
+            "Tienes presión alta desde hace 10 años, pero dejaste tus pastillas hace una semana "
+            "porque se te acabaron. Llegaste al hospital para operarte de la próstata. "
+            "En este momento te están poniendo medicamentos por el suero y sientes mucho nerviosismo, "
+            "te duele un poco la cabeza y ves algunas lucecitas. "
+            "Tu presión está en 195/115. Habla con angustia y pregunta si es peligroso."
+        ),
+    },
+    {
+        "id": "ecoe_023",
+        "diagnosis": "Hipotensión Severa Post-Raquídea para Cesárea",
+        "patient_persona": (
+            "Eres 'Doña Fernanda', embarazada de 38 semanas de Santa Rosa de Copán. "
+            "Te acaban de poner la anestesia en la espalda para la cesárea. "
+            "De repente te sientes muy mareada, con náuseas, ves todo borroso y sientes "
+            "que tu corazón late muy rápido. Estás asustada por tu bebé. "
+            "Tu presión bajó a 75/40 y la FCF del bebé bajó a 90 lpm. "
+            "Habla con pánico y preguntas si tu bebé está bien."
+        ),
+    },
 ]
 
 async def start_ecoe_simulation(case_id: str, first_message: str = None) -> dict:
