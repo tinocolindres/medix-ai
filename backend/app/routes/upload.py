@@ -10,6 +10,7 @@ from app.services.vision import analyze_medical_image
 from app.schemas.medix import ScanResponse
 
 router = APIRouter()
+print("UPLOAD_PY_V2_LOADED", flush=True)
 MAX_FILE_SIZE_MB = 10
 
 async def upload_to_s3(file_data, file_name, media_type):
