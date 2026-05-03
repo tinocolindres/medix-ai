@@ -70,11 +70,17 @@ async def upload_scan(
         )
 
     # ── Validar archivo ───────────────────────────────────────────────────────
-    if file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail=f"Tipo de archivo no permitido. Use: {', '.join(ALLOWED_CONTENT_TYPES)}"
-        )
+    # Normalizar content_type si viene None o incorrecto desde Android
+    content_type = file.content_type or "image/jpeg"
+    if "jpeg" in content_type or "jpg" in content_type:
+        content_type = "image/jpeg"
+    elif "png" in content_type:
+        content_type = "image/png"
+    elif "webp" in content_type:
+        content_type = "image/webp"
+    else:
+        content_type = "image/jpeg"  # Default seguro
+    file.content_type = content_type
 
     file_data = await file.read()
     file_size_mb = len(file_data) / (1024 * 1024)
