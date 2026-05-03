@@ -70,17 +70,11 @@ async def upload_scan(
         )
 
     # ── Validar archivo ───────────────────────────────────────────────────────
-    # Normalizar content_type si viene None o incorrecto desde Android
-    content_type = file.content_type or "image/jpeg"
-    if "jpeg" in content_type or "jpg" in content_type:
-        content_type = "image/jpeg"
-    elif "png" in content_type:
-        content_type = "image/png"
-    elif "webp" in content_type:
-        content_type = "image/webp"
-    else:
-        content_type = "image/jpeg"  # Default seguro
-    file.content_type = content_type
+    if file.content_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Tipo de archivo no permitido. Use: {', '.join(ALLOWED_CONTENT_TYPES)}"
+        )
 
     file_data = await file.read()
     file_size_mb = len(file_data) / (1024 * 1024)
@@ -92,7 +86,7 @@ async def upload_scan(
         )
 
     # ── Subir a S3 ────────────────────────────────────────────────────────────
-    file_url = await upload_to_s3(file_data, file.filename or "scan.jpg", file.content_type)
+    file_url = await upload_to_s3(file_data, file.filename or "scan.jpg", content_type)
 
     # ── Crear registro en DB (pendiente de análisis) ──────────────────────────
     scan = MedicalScan(
@@ -109,7 +103,7 @@ async def upload_scan(
     try:
         analysis = await analyze_medical_image(
             image_data=file_data,
-            media_type=file.content_type,
+            media_type=content_type,
             scan_type=scan_type,
             user_context=patient_context,
         )
