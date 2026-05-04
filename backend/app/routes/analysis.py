@@ -24,6 +24,14 @@ router = APIRouter()
 
 def _check_rate_limit(user: User) -> None:
     """Verifica que el usuario no haya excedido su límite de mensajes hoy."""
+    from datetime import datetime, timezone
+    # Auto-reset diario a medianoche UTC
+    now = datetime.now(timezone.utc)
+    if user.rate_limit_reset_at is None or now.date() > user.rate_limit_reset_at.date():
+        user.chat_count_today = 0
+        user.scan_count_today = 0
+        user.rate_limit_reset_at = now
+
     limits = {
         "free": settings.RATE_LIMIT_FREE_CHAT,
         "pro": settings.RATE_LIMIT_PRO_CHAT,
