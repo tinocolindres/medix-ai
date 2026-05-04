@@ -159,8 +159,8 @@ async def create_checkout(
             is_launch_price=is_launch,
         )
 
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"Error PayPal: {str(e)}")
+    except Exception as e:
+    raise HTTPException(status_code=500, detail=f"Error PayPal: {str(e)}")
 
 
 @router.post("/capture")
