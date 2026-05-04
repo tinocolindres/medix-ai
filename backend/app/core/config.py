@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_FREE_SCAN: int = 3
     RATE_LIMIT_PRO_SCAN: int = 50
     RATE_LIMIT_CLINICAL_SCAN: int = 999
-    PAYPAL_CLIENT_ID: str = ""
-    PAYPAL_CLIENT_SECRET: str = ""
+    PAYPAL_CLIENT_ID: str = "AXErNwtQGpFGg7i5T03bJ5ONw0H-I0NFT05lHKO36sygzfcI6sJNg5Vq9J5RIEYTKZUXCfm2rvuA0pVQ"
+    PAYPAL_CLIENT_SECRET: str = "EHqWvu50AhI223yA1W10PsGa1gs_tBZyB4SFZbseOfGdVsK_psRPvt46snl7IdVQd7O-URhViFp87HPM"
     PAYPAL_MODE: str = "sandbox"
     PAYPAL_BASE_URL: str = "https://api-m.sandbox.paypal.com"
     BETA_MODE: bool = True
