@@ -108,4 +108,13 @@ async def payment_success():
 @router.get("/cancel")
 async def payment_cancel():
     return {"message": "Pago cancelado."}
+@router.get("/test-connectivity")
+async def test_connectivity():
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api-m.sandbox.paypal.com", timeout=10)
+            return {"status": resp.status_code, "reachable": True}
+    except Exception as e:
+        return {"reachable": False, "error": str(e)}
 
