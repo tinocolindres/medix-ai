@@ -100,3 +100,13 @@ async def success():
 @router.get("/cancel")
 async def cancel():
     return {"message": "Pago cancelado."}
+@router.get("/debug-vars")
+async def debug_vars():
+    cid = settings.PAYPAL_CLIENT_ID
+    sec = settings.PAYPAL_CLIENT_SECRET
+    return {
+        "client_id_len": len(cid),
+        "client_id_start": cid[:10] if cid else "EMPTY",
+        "secret_len": len(sec),
+        "secret_start": sec[:10] if sec else "EMPTY",
+    }
