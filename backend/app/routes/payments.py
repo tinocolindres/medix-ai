@@ -23,7 +23,7 @@ LAUNCH_LIMIT = 100
 async def get_paypal_token():
     credentials = base64.b64encode(f"{settings.PAYPAL_CLIENT_ID}:{settings.PAYPAL_CLIENT_SECRET}".encode()).decode()
     async with httpx.AsyncClient() as client:
-        resp = await client.post(f"{"https://api-m.paypal.com"}/v1/oauth2/token",
+        resp = await client.post(https://api-m.paypal.com/v1/oauth2/token,
             headers={"Authorization": f"Basic {credentials}", "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "Mozilla/5.0", "Accept": "application/json"},
             data="grant_type=client_credentials", timeout=30)
         resp.raise_for_status()
@@ -51,7 +51,7 @@ async def create_checkout(payload: CheckoutRequest, db: AsyncSession = Depends(g
     try:
         token = await get_paypal_token()
         async with httpx.AsyncClient() as client:
-            resp = await client.post(f"{"https://api-m.paypal.com"}/v2/checkout/orders",
+            resp = await client.post("https://api-m.paypal.com/v2/checkout/orders",
                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
                 json={"intent": "CAPTURE", "purchase_units": [{"amount": {"currency_code": plan["currency"], "value": price}, "description": plan["description"], "custom_id": f"{current_user.id}:{payload.plan}"}],
                     "application_context": {"brand_name": "Medix AI", "return_url": "https://medix-ai-production.up.railway.app/api/v1/subscription/success", "cancel_url": "https://medix-ai-production.up.railway.app/api/v1/subscription/cancel", "user_action": "PAY_NOW", "shipping_preference": "NO_SHIPPING"}},
@@ -72,7 +72,7 @@ async def capture_payment(payload: CaptureRequest, db: AsyncSession = Depends(ge
     try:
         token = await get_paypal_token()
         async with httpx.AsyncClient() as client:
-            resp = await client.post(f"{"https://api-m.paypal.com"}/v2/checkout/orders/{payload.order_id}/capture",
+            resp = await client.post(f"https://api-m.paypal.com/v2/checkout/orders/{payload.order_id}/capture",
                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, timeout=30)
             resp.raise_for_status()
             capture = resp.json()
