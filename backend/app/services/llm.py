@@ -112,8 +112,13 @@ def build_system_prompt(
             "inicia con [⚠️ CÓDIGO ROJO].\n"
         )
 
+    from datetime import datetime, timezone
+    fecha_hoy = datetime.now(timezone.utc).strftime("%-d de %B de %Y")
+
     constraints = (
         "\n\n**REGLAS ABSOLUTAS:**\n"
+        f"0. La fecha actual es **{fecha_hoy}**. Usa esta fecha para TODOS los cálculos clínicos "
+        "(edad gestacional, edad del paciente, tiempo de evolución, etc.).\n"
         "1. Usa Markdown con viñetas y negritas para legibilidad óptima en móvil.\n"
         "2. Las emergencias vitales inician con **[⚠️ ALERTA CLÍNICA]**.\n"
         "3. Tono profesional, objetivo, científico. Nunca alarmista sin evidencia.\n"
