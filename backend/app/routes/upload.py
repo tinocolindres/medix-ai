@@ -1,5 +1,5 @@
 ﻿import uuid
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.models.user import User
@@ -24,7 +24,7 @@ async def upload_to_s3(file_data, file_name, media_type):
         return f"local://{file_name}"
 
 @router.post("/scan", response_model=ScanResponse, status_code=201)
-async def upload_scan(file: UploadFile = File(...), scan_type: str = Form(default="other"), patient_context: str = Form(default=None), db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+async def upload_scan(file: UploadFile = File(...), scan_type: str = Form(default="other"), patient_context: Optional[str] = Form(default=None), db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     scan_limits = {"free": 20, "pro": settings.RATE_LIMIT_PRO_SCAN, "clinical": settings.RATE_LIMIT_CLINICAL_SCAN}
     limit = scan_limits.get(current_user.subscription_tier, 20)
     if current_user.scan_count_today >= limit:
