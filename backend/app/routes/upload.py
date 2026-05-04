@@ -58,3 +58,5 @@ async def upload_scan(file: UploadFile = File(...), scan_type: str = Form(defaul
     current_user.scan_count_today += 1
     await db.flush()
     return ScanResponse(scan_id=scan.id, summary=scan.ai_summary or "", findings=scan.ai_findings or "", recommendations=scan.ai_recommendations or "", urgency_level=scan.urgency_level or "low", confidence_score=scan.confidence_score or 0.8, processing_time_ms=scan.processing_time_ms or 0.0)
+
+# v3
