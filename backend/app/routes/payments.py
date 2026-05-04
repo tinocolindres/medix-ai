@@ -24,7 +24,7 @@ async def get_paypal_token():
     credentials = base64.b64encode(f"{settings.PAYPAL_CLIENT_ID}:{settings.PAYPAL_CLIENT_SECRET}".encode()).decode()
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{"https://api-m.sandbox.paypal.com"}/v1/oauth2/token",
-            headers={"Authorization": f"Basic {credentials}", "Content-Type": "application/x-www-form-urlencoded"},
+            headers={"Authorization": f"Basic {credentials}", "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "Mozilla/5.0", "Accept": "application/json"},
             data="grant_type=client_credentials", timeout=30)
         resp.raise_for_status()
         return resp.json()["access_token"]
