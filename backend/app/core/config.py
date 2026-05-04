@@ -1,4 +1,3 @@
-
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -25,6 +24,7 @@ class Settings(BaseSettings):
     PAYPAL_CLIENT_ID: str = ""
     PAYPAL_CLIENT_SECRET: str = ""
     PAYPAL_MODE: str = "sandbox"
+    PAYPAL_BASE_URL: str = "https://api-m.sandbox.paypal.com"
     BETA_MODE: bool = True
     FIREBASE_PROJECT_ID: str = ""
     FIREBASE_SERVICE_ACCOUNT_JSON: str = ""

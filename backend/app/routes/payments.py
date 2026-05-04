@@ -1,15 +1,14 @@
 """
-Medix AI — Payment Routes (PayPal + Beta Mode)
-
-MODO BETA ACTIVO: Todos los usuarios nuevos reciben plan Pro automáticamente.
-Cuando BETA_MODE=false, activa el flujo de pago real con PayPal.
+Medix AI — Subscription Service
+Pagos con PayPal — Planes Pro y Clinical
 """
-import json
-import structlog
-from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
+import httpx
+import base64
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from pydantic import BaseModel
+from typing import Optional
 
 from app.db.session import get_db
 from app.models.user import User
@@ -17,179 +16,262 @@ from app.core.security import get_current_active_user
 from app.core.config import settings
 
 router = APIRouter()
-logger = structlog.get_logger()
 
-FRONTEND_URL = "https://app.medix.hn"
+# ── Planes disponibles ─────────────────────────────────────────
+PLANS = {
+    "pro": {
+        "name": "Medix AI Pro",
+        "price": "9.99",
+        "currency": "USD",
+        "description": "Plan Pro — Acceso completo a Chat IA, MedScan, SOAP, ECOE y más",
+        "tier": "pro",
+    },
+    "clinical": {
+        "name": "Medix AI Clinical",
+        "price": "19.99",
+        "currency": "USD",
+        "description": "Plan Clinical — Acceso ilimitado para especialistas y hospitales",
+        "tier": "clinical",
+    },
+}
+
+# Precio de lanzamiento primeros 100 usuarios
+LAUNCH_PRICE = {
+    "pro": "4.99",
+    "clinical": "9.99",
+}
+LAUNCH_LIMIT = 100
 
 
+async def get_paypal_token() -> str:
+    """Obtiene token de acceso de PayPal."""
+    credentials = base64.b64encode(
+        f"{settings.PAYPAL_CLIENT_ID}:{settings.PAYPAL_CLIENT_SECRET}".encode()
+    ).decode()
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            f"{settings.PAYPAL_BASE_URL if hasattr(settings, "PAYPAL_BASE_URL") else "https://api-m.sandbox.paypal.com"}/v1/oauth2/token",
+            headers={
+                "Authorization": f"Basic {credentials}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            data="grant_type=client_credentials",
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return resp.json()["access_token"]
+
+
+async def count_paid_users(db: AsyncSession) -> int:
+    """Cuenta usuarios con plan pagado."""
+    from sqlalchemy import func
+    result = await db.execute(
+        select(func.count(User.id)).where(
+            User.subscription_tier.in_(["pro", "clinical"])
+        )
+    )
+    return result.scalar() or 0
+
+
+# ── Schemas ────────────────────────────────────────────────────
 class CheckoutRequest(BaseModel):
     plan: str  # "pro" | "clinical"
 
 
-# ── Estado de plan del usuario ────────────────────────────────
-@router.get("/status")
-async def subscription_status(
-    current_user: User = Depends(get_current_active_user),
-):
-    """Estado actual de suscripción del usuario."""
-    limits = {
-        "free":     {"chat_day": 20,  "scan_day": 3,   "soap": False},
-        "pro":      {"chat_day": 500, "scan_day": 50,  "soap": True},
-        "clinical": {"chat_day": 500, "scan_day": 999, "soap": True},
-    }
-    tier = current_user.subscription_tier
-    return {
-        "tier": tier,
-        "chat_used_today": current_user.chat_count_today,
-        "scan_used_today": current_user.scan_count_today,
-        "limits": limits.get(tier, limits["free"]),
-        "beta_mode": settings.BETA_MODE,
-        "payment_provider": "paypal" if not settings.BETA_MODE else "none",
-    }
+class CheckoutResponse(BaseModel):
+    approval_url: str
+    order_id: str
+    price: str
+    is_launch_price: bool
 
 
-# ── Checkout PayPal ───────────────────────────────────────────
-@router.post("/checkout")
+class CaptureRequest(BaseModel):
+    order_id: str
+    plan: str
+
+
+# ── Endpoints ──────────────────────────────────────────────────
+
+@router.post("/checkout", response_model=CheckoutResponse)
 async def create_checkout(
     payload: CheckoutRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    BETA_MODE=true  → Activa plan Pro inmediatamente gratis.
-    BETA_MODE=false → Redirige a PayPal para pago real.
-    """
-    if payload.plan not in ("pro", "clinical"):
-        raise HTTPException(status_code=400, detail="Plan inválido. Usa 'pro' o 'clinical'.")
+    """Crea una orden de pago en PayPal."""
+    if payload.plan not in PLANS:
+        raise HTTPException(status_code=400, detail="Plan no válido. Use 'pro' o 'clinical'.")
 
-    # ── MODO BETA: gratis sin pago ────────────────────────────
-    if settings.BETA_MODE:
-        current_user.subscription_tier = payload.plan
-        await db.flush()
-        logger.info("Beta upgrade gratuito", user=current_user.email, plan=payload.plan)
-        return {
-            "mode": "beta",
-            "plan": payload.plan,
-            "message": (
-                f"¡Bienvenido al beta de Medix AI! "
-                f"Tu plan {payload.plan.upper()} está activo sin costo durante la beta."
-            ),
-            "checkout_url": None,
-            "price": "Gratis durante beta",
-        }
+    plan = PLANS[payload.plan]
 
-    # ── MODO PRODUCCIÓN: PayPal ───────────────────────────────
-    if not settings.PAYPAL_CLIENT_ID:
-        raise HTTPException(
-            status_code=503,
-            detail="Sistema de pagos no configurado. Contacta soporte.",
-        )
-
-    from app.services.paypal_service import create_subscription_link
+    # Verificar si aplica precio de lanzamiento
+    paid_count = await count_paid_users(db)
+    is_launch = paid_count < LAUNCH_LIMIT
+    price = LAUNCH_PRICE[payload.plan] if is_launch else plan["price"]
 
     try:
-        result = await create_subscription_link(
-            user_id=current_user.id,
-            plan=payload.plan,
-            return_url=f"{FRONTEND_URL}/subscription/success",
-            cancel_url=f"{FRONTEND_URL}/subscription/cancel",
+        token = await get_paypal_token()
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{settings.PAYPAL_BASE_URL if hasattr(settings, "PAYPAL_BASE_URL") else "https://api-m.sandbox.paypal.com"}/v2/checkout/orders",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "intent": "CAPTURE",
+                    "purchase_units": [{
+                        "amount": {
+                            "currency_code": plan["currency"],
+                            "value": price,
+                        },
+                        "description": plan["description"] + (
+                            f" — Precio de lanzamiento ({LAUNCH_LIMIT - paid_count} cupos restantes)"
+                            if is_launch else ""
+                        ),
+                        "custom_id": f"{current_user.id}:{payload.plan}",
+                    }],
+                    "application_context": {
+                        "brand_name": "Medix AI",
+                        "return_url": "https://medix-ai-production.up.railway.app/api/v1/subscription/success",
+                        "cancel_url": "https://medix-ai-production.up.railway.app/api/v1/subscription/cancel",
+                        "user_action": "PAY_NOW",
+                        "shipping_preference": "NO_SHIPPING",
+                    },
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            order = resp.json()
+
+        # Extraer URL de aprobación
+        approval_url = next(
+            (link["href"] for link in order["links"] if link["rel"] == "approve"),
+            None
         )
-        return {
-            "mode": "paypal",
-            "plan": payload.plan,
-            "checkout_url": result["approve_url"],
-            "subscription_id": result["subscription_id"],
-            "price_usd": result["price_usd"],
-            "price_hn": result["price_hn"],
-        }
-    except Exception as e:
-        logger.error("Error creando checkout PayPal", error=str(e))
-        raise HTTPException(status_code=500, detail="Error iniciando el pago. Intenta de nuevo.")
+        if not approval_url:
+            raise HTTPException(status_code=500, detail="Error al obtener URL de pago PayPal.")
+
+        return CheckoutResponse(
+            approval_url=approval_url,
+            order_id=order["id"],
+            price=price,
+            is_launch_price=is_launch,
+        )
+
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=500, detail=f"Error PayPal: {str(e)}")
 
 
-# ── Webhook PayPal ────────────────────────────────────────────
-@router.post("/webhook", include_in_schema=False)
-async def paypal_webhook(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Recibe eventos de PayPal y actualiza el plan del usuario.
-    Eventos manejados:
-    - BILLING.SUBSCRIPTION.ACTIVATED → activar plan
-    - BILLING.SUBSCRIPTION.CANCELLED → bajar a free
-    - PAYMENT.SALE.COMPLETED         → confirmar pago
-    """
-    body = await request.body()
-    headers = dict(request.headers)
-
-    # Verificar firma del webhook
-    if settings.PAYPAL_WEBHOOK_ID and not settings.BETA_MODE:
-        from app.services.paypal_service import verify_webhook
-        is_valid = await verify_webhook(headers, body, settings.PAYPAL_WEBHOOK_ID)
-        if not is_valid:
-            logger.warning("Webhook PayPal con firma inválida")
-            raise HTTPException(status_code=400, detail="Firma de webhook inválida")
-
-    try:
-        event = json.loads(body)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Body inválido")
-
-    event_type = event.get("event_type", "")
-    resource = event.get("resource", {})
-    user_id = resource.get("custom_id")  # Lo pasamos al crear la suscripción
-
-    logger.info("PayPal webhook recibido", event_type=event_type, user_id=user_id)
-
-    if not user_id:
-        return {"status": "skipped", "reason": "no_user_id"}
-
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if not user:
-        return {"status": "error", "reason": "user_not_found"}
-
-    if event_type == "BILLING.SUBSCRIPTION.ACTIVATED":
-        # Determinar el plan desde el nombre del plan de PayPal
-        plan_name = resource.get("plan_id", "")
-        new_tier = "clinical" if "clinical" in plan_name.lower() else "pro"
-        user.subscription_tier = new_tier
-        user.paypal_subscription_id = resource.get("id")
-        logger.info("Suscripción PayPal activada", user=user.email, tier=new_tier)
-
-    elif event_type in ("BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.EXPIRED"):
-        user.subscription_tier = "free"
-        logger.info("Suscripción PayPal cancelada", user=user.email)
-
-    elif event_type == "PAYMENT.SALE.COMPLETED":
-        logger.info("Pago PayPal confirmado", user=user.email,
-                    amount=resource.get("amount", {}).get("total"))
-
-    await db.flush()
-    return {"status": "ok", "event_type": event_type, "user_id": user_id}
-
-
-# ── Activar beta plan manualmente (para invitar usuarios) ──────
-@router.post("/beta-activate")
-async def beta_activate(
-    plan: str = "pro",
+@router.post("/capture")
+async def capture_payment(
+    payload: CaptureRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    Activa plan Pro/Clinical gratis durante beta.
-    Solo disponible cuando BETA_MODE=true.
-    """
-    if not settings.BETA_MODE:
-        raise HTTPException(status_code=403, detail="Beta mode no activo.")
-    if plan not in ("pro", "clinical"):
-        raise HTTPException(status_code=400, detail="Plan debe ser 'pro' o 'clinical'.")
+    """Captura el pago aprobado y actualiza el plan del usuario."""
+    if payload.plan not in PLANS:
+        raise HTTPException(status_code=400, detail="Plan no válido.")
 
-    current_user.subscription_tier = plan
-    await db.flush()
+    try:
+        token = await get_paypal_token()
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{settings.PAYPAL_BASE_URL if hasattr(settings, "PAYPAL_BASE_URL") else "https://api-m.sandbox.paypal.com"}/v2/checkout/orders/{payload.order_id}/capture",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            capture = resp.json()
+
+        if capture["status"] != "COMPLETED":
+            raise HTTPException(status_code=400, detail="Pago no completado.")
+
+        # Actualizar plan del usuario
+        current_user.subscription_tier = payload.plan
+        current_user.paypal_subscription_id = capture["id"]
+        await db.flush()
+
+        return {
+            "success": True,
+            "plan": payload.plan,
+            "transaction_id": capture["id"],
+            "message": f"¡Bienvenido a Medix AI {PLANS[payload.plan]['name']}!",
+        }
+
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=500, detail=f"Error al capturar pago: {str(e)}")
+
+
+@router.get("/status")
+async def subscription_status(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Retorna el estado de suscripción actual del usuario."""
     return {
-        "status": "ok",
-        "tier": plan,
-        "message": f"Plan {plan.upper()} activado — ¡Bienvenido al beta de Medix AI!",
+        "tier": current_user.subscription_tier,
+        "is_pro": current_user.subscription_tier in ["pro", "clinical"],
+        "is_clinical": current_user.subscription_tier == "clinical",
+        "paypal_id": current_user.paypal_subscription_id,
     }
+
+
+@router.get("/plans")
+async def get_plans(db: AsyncSession = Depends(get_db)):
+    """Retorna los planes disponibles con precios actuales."""
+    paid_count = await count_paid_users(db)
+    is_launch = paid_count < LAUNCH_LIMIT
+    remaining = max(0, LAUNCH_LIMIT - paid_count)
+
+    return {
+        "is_launch_active": is_launch,
+        "launch_slots_remaining": remaining,
+        "plans": [
+            {
+                "id": "pro",
+                "name": "Medix AI Pro",
+                "price": LAUNCH_PRICE["pro"] if is_launch else PLANS["pro"]["price"],
+                "regular_price": PLANS["pro"]["price"],
+                "currency": "USD",
+                "is_launch_price": is_launch,
+                "features": [
+                    "Chat IA Médico ilimitado",
+                    "MedScan Vision — 50 scans/día",
+                    "Dictado SOAP ilimitado",
+                    "ECOE Simulador ilimitado",
+                    "Todas las calculadoras offline",
+                    "Q-Bank IFOM/EUNACOM/ENARM",
+                ],
+            },
+            {
+                "id": "clinical",
+                "name": "Medix AI Clinical",
+                "price": LAUNCH_PRICE["clinical"] if is_launch else PLANS["clinical"]["price"],
+                "regular_price": PLANS["clinical"]["price"],
+                "currency": "USD",
+                "is_launch_price": is_launch,
+                "features": [
+                    "Todo lo de Pro",
+                    "MedScan Vision ilimitado",
+                    "Acceso prioritario a nuevos módulos",
+                    "Soporte directo WhatsApp",
+                    "Ideal para especialistas y hospitales",
+                ],
+            },
+        ],
+    }
+
+
+@router.get("/success")
+async def payment_success():
+    """Redirect page after successful PayPal payment."""
+    return {"message": "Pago exitoso. Regresa a la app para activar tu plan."}
+
+
+@router.get("/cancel")
+async def payment_cancel():
+    """Redirect page after cancelled PayPal payment."""
+    return {"message": "Pago cancelado. Puedes intentarlo de nuevo desde la app."}
