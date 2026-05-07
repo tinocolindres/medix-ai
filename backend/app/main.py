@@ -38,7 +38,7 @@ app = FastAPI(
 )
 
 # ── CORS ──────────────────────────────────────────────────────
-origins = ["*"] if settings.ENVIRONMENT == "development" else [
+origins = [
     "https://medix.hn",
     "https://app.medix.hn",
     "https://medix-ai-504.netlify.app",
@@ -48,12 +48,12 @@ origins = ["*"] if settings.ENVIRONMENT == "development" else [
     "http://localhost:3000",
 ]
 
+# Security middleware debe ir ANTES del CORS en FastAPI
+app.middleware("http")(security_middleware)
+
 app.add_middleware(CORSMiddleware,
     allow_origins=origins, allow_credentials=True,
     allow_methods=["*"], allow_headers=["*"])
-
-# ── Security middleware ────────────────────────────────────────
-app.middleware("http")(security_middleware)
 
 # ── Global exception handler ──────────────────────────────────
 @app.exception_handler(Exception)
