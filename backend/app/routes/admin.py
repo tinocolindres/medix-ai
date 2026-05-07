@@ -198,3 +198,16 @@ async def manual_snapshot(
     """Genera snapshot diario manualmente."""
     snapshot = await analytics_svc.generate_daily_snapshot(db)
     return {"status": "ok", "date": snapshot.date, "active_users": snapshot.active_users}
+@router.post("/setup-admin")
+async def setup_admin(
+    email: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Endpoint temporal para configurar primer admin."""
+    result = await db.execute(select(User).where(User.email == email))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    user.role = "admin"
+    await db.flush()
+    return {"status": "ok", "message": f"{email} ahora es admin"}
