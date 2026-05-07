@@ -41,7 +41,7 @@ async def submit_feedback(
     return {"status": "ok", "feedback_id": fb.id, "message": "¡Gracias por tu feedback!"}
 
 
-@router.post("/fcm-token")
+@router.post("/feedback/fcm-token")
 async def register_fcm_token(
     token: str,
     db: AsyncSession = Depends(get_db),
