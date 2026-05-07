@@ -198,8 +198,7 @@ async def manual_snapshot(
     """Genera snapshot diario manualmente."""
     snapshot = await analytics_svc.generate_daily_snapshot(db)
     return {"status": "ok", "date": snapshot.date, "active_users": snapshot.active_users}
-@router.post("/setup-admin")
-async def setup_admin(
+
     email: str,
     db: AsyncSession = Depends(get_db),
 ):
