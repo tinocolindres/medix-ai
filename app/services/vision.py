@@ -148,7 +148,7 @@ Responde ÚNICAMENTE con este JSON (sin texto adicional):
             "confidence_score": 0.5,
             "extracted_data": {},
         }
-print(f"MEDSCAN_DEBUG: {result}", flush=True)
+
     result["processing_time_ms"] = elapsed_ms
     result["tokens_used"] = response.usage.input_tokens + response.usage.output_tokens
     return result
