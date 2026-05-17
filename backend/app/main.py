@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.db.session import create_tables
-from app.routes import auth, upload, analysis, payments, admin, feedback
+from app.routes import auth, upload, analysis, payments, feedback
 from app.middleware.security import security_middleware
 
 logger = structlog.get_logger()
@@ -68,7 +68,7 @@ app.include_router(auth.router,           prefix=f"{V1}/auth",         tags=["�
 app.include_router(upload.router,         prefix=f"{V1}/upload",       tags=["🔬 MedScan"])
 app.include_router(analysis.router,       prefix=f"{V1}/analysis",     tags=["🤖 IA"])
 app.include_router(payments.router,       prefix=f"{V1}/subscription", tags=["💳 Pagos"])
-app.include_router(admin.router,          prefix=f"{V1}/admin",        tags=["🛡️ Admin"])
+# app.include_router(admin.router,          prefix=f"{V1}/admin",        tags=["🛡️ Admin"])
 app.include_router(feedback.router,       prefix=f"{V1}",              tags=["⭐ Feedback"])
 
 # ── Health ────────────────────────────────────────────────────
