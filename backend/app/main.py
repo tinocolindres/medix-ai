@@ -42,6 +42,7 @@ origins = [
     "https://medix.hn",
     "https://app.medix.hn",
     "https://medix-ai-504.netlify.app",
+    "https://tinocolindres.github.io",
     "https://admin.medix.hn",
     "capacitor://localhost",
     "http://localhost",
