@@ -78,13 +78,17 @@ async def analyze_medical_image(
     "5) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion radiologica.\n"
     "6) RECOMENDACIONES: TC, RM u otros estudios complementarios urgentes si aplica."
 ),
-        "lab_result": (
-            "Analiza este RESULTADO DE LABORATORIO. Extrae: "
-            "1) Tipo de examen, "
-            "2) Todos los valores con sus unidades y rangos de referencia, "
-            "3) Marca los valores fuera de rango (alto/bajo), "
-            "4) Interpretación clínica general."
-        ),
+      "lab_result": (
+    "Eres el mejor internista y patologo clinico del mundo. Analiza este RESULTADO DE LABORATORIO:\n"
+    "1) TIPO DE EXAMEN: Identifica todos los paneles y pruebas presentes.\n"
+    "2) VALORES COMPLETOS: Cada valor con unidad y rango de referencia del laboratorio.\n"
+    "3) VALORES ALTERADOS: Marca claramente valores ALTOS y BAJOS con magnitud de desviacion.\n"
+    "4) INTERPRETACION POR SISTEMA: Hematologia (anemia, leucocitosis), quimica (renal, hepatica, glucemia, electrolitos), lipidos (riesgo CV), inflamacion (PCR, VSG).\n"
+    "5) PATRONES DIAGNOSTICOS: Sindrome nefrotico, hepatitis, DM, sepsis, etc.\n"
+    "6) VALORES DE PANICO: K+>6.5, glucosa>500, Cr>10 — accion inmediata.\n"
+    "7) DIAGNOSTICO DIFERENCIAL: Basado en conjunto de alteraciones.\n"
+    "8) RECOMENDACIONES: Estudios complementarios, repeticion de valores urgentes."
+),
         "ecg": (
     "Eres el mejor cardiologo y electrofisiologo del mundo con 30 anos de experiencia interpretando ECGs. "
     "Analiza este ELECTROCARDIOGRAMA con la profundidad y precision de un cardiologo experto. "
