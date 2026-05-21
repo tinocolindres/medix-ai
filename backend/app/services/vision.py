@@ -74,13 +74,23 @@ async def analyze_medical_image(
             "4) Interpretación clínica general."
         ),
         "ecg": (
-            "Analiza este ELECTROCARDIOGRAMA. Evalúa: "
-            "1) Ritmo y frecuencia cardíaca, "
-            "2) Eje eléctrico, "
-            "3) Morfología de ondas P, QRS, T, "
-            "4) Intervalo PR, QT, "
-            "5) Hallazgos patológicos si existen."
-        ),
+    "Eres el mejor cardiologo y electrofisiologo del mundo con 30 anos de experiencia interpretando ECGs. "
+    "Analiza este ELECTROCARDIOGRAMA con la profundidad y precision de un cardiologo experto. "
+    "Evalua OBLIGATORIAMENTE cada punto:\n"
+    "1) RITMO: Sinusal/FA/flutter/TSV/marcapasos. Frecuencia ventricular y auricular exacta en lpm.\n"
+    "2) EJE ELECTRICO: Normal/izquierda/derecha/indeterminado. Grados aproximados.\n"
+    "3) ONDAS P: Presencia, morfologia, duracion, amplitud. P mitrale, P pulmonale, ausencia.\n"
+    "4) INTERVALO PR: Duracion en ms. Bloqueo AV 1/2/3 grado - Mobitz I o II si aplica.\n"
+    "5) QRS: Duracion ms. BRD o BRI completo/incompleto. Hemibloqueos. Onda Q patologica con derivaciones afectadas. Criterios HVI/HVD Sokolow-Lyon y Cornell.\n"
+    "6) SEGMENTO ST: Elevacion o depresion por derivacion en mm. Patron lesion/isquemia/pericarditis.\n"
+    "7) ONDA T: Hiperagudas simetricas (hiperkalemia o IAM hiperagudo). Inversion por derivacion. Ondas T picudas.\n"
+    "8) QT/QTc: Duracion corregida en ms. Prolongado con riesgo Torsades de Pointes.\n"
+    "9) ONDA U: Prominente en hipokalemia.\n"
+    "10) HALLAZGOS ESPECIALES: WPW, Brugada, hiperkalemia, hipokalemia, efecto digitalis, strain, repolarizacion precoz.\n"
+    "11) CORRELACION CLINICA: Diferencial ordenado por probabilidad. Urgencia. Estudios urgentes recomendados.\n"
+    "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
+    "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
+),
         "ultrasound": (
             "Analiza este ULTRASONIDO. Describe: "
             "1) Órgano/región evaluada, "
