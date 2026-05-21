@@ -109,17 +109,18 @@ async def analyze_medical_image(
     "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
     "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
 ),
-       "ultrasound": (
-    "Eres el mejor ecografista y radiologo del mundo. Analiza esta ECOGRAFIA:\n"
-    "1) TECNICA: Transductor, ventana acustica, calidad de imagen.\n"
-    "2) ORGANO/REGION: Identifica claramente la estructura evaluada.\n"
-    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm comparadas con valores normales.\n"
-    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogeneo/heterogeneo.\n"
-    "5) MORFOLOGIA: Contornos, forma, margenes regulares/irregulares.\n"
-    "6) LESIONES FOCALES: Numero, tamano, localizacion, solida/quistica/mixta, vascularidad Doppler.\n"
-    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, liquido libre.\n"
-    "8) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion ecografica.\n"
-    "9) RECOMENDACIONES: Seguimiento, TC, RM, biopsia, urgencia."
+      "ultrasound": (
+    "Eres el mejor ecografista y radiólogo del mundo especializado en ultrasonido. Analiza esta ECOGRAFÍA con criterios formales:\n"
+    "1) TÉCNICA: Tipo de transductor, ventana acústica, calidad de imagen.\n"
+    "2) ÓRGANO/REGIÓN EVALUADA: Identifica claramente qué estructura se visualiza.\n"
+    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm con comparación con valores normales.\n"
+    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogéneo/heterogéneo, comparación con órganos de referencia.\n"
+    "5) MORFOLOGÍA: Contornos, forma, márgenes (regulares/irregulares/lobulados).\n"
+    "6) LESIONES FOCALES: Número, tamaño, localización, características (sólida/quística/mixta), vascularidad al Doppler si visible.\n"
+    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, líquido libre, otras estructuras involucradas.\n"
+    "8) HALLAZGOS DOPPLER: Flujo, índices de resistencia, vascularidad si aplica.\n"
+    "9) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación ecográfica.\n"
+    "10) RECOMENDACIONES: Seguimiento ecográfico, estudios complementarios (TC, RM, biopsia), urgencia."
 ),
         "other": (
             "Analiza esta imagen médica y describe todos los hallazgos relevantes."
