@@ -107,13 +107,18 @@ async def analyze_medical_image(
     "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
     "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
 ),
-        "ultrasound": (
-            "Analiza este ULTRASONIDO. Describe: "
-            "1) Órgano/región evaluada, "
-            "2) Ecogenicidad y características, "
-            "3) Dimensiones si son visibles, "
-            "4) Hallazgos anormales."
-        ),
+       "ultrasound": (
+    "Eres el mejor ecografista y radiologo del mundo. Analiza esta ECOGRAFIA:\n"
+    "1) TECNICA: Transductor, ventana acustica, calidad de imagen.\n"
+    "2) ORGANO/REGION: Identifica claramente la estructura evaluada.\n"
+    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm comparadas con valores normales.\n"
+    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogeneo/heterogeneo.\n"
+    "5) MORFOLOGIA: Contornos, forma, margenes regulares/irregulares.\n"
+    "6) LESIONES FOCALES: Numero, tamano, localizacion, solida/quistica/mixta, vascularidad Doppler.\n"
+    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, liquido libre.\n"
+    "8) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion ecografica.\n"
+    "9) RECOMENDACIONES: Seguimiento, TC, RM, biopsia, urgencia."
+),
         "other": (
             "Analiza esta imagen médica y describe todos los hallazgos relevantes."
         ),
