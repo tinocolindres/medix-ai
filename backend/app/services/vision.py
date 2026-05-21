@@ -67,16 +67,18 @@ async def analyze_medical_image(
     "6) DATOS: Medico, fecha, validez.\n"
     "7) GENERICOS SESAL: Alternativas en Cuadro Basico Honduras."
 ),
-        "xray": (
-            "Analiza esta RADIOGRAFÍA. Describe: "
-            "xray": (
-    "Eres el mejor radiologo del mundo con 30 anos de experiencia. Analiza esta RADIOGRAFIA:\n"
-    "1) TECNICA: Proyeccion, calidad, penetracion, rotacion.\n"
-    "2) ESTRUCTURAS OSEAS: Densidad, cortical, fracturas, lesiones liticas/blasticas.\n"
-    "3) PARTES BLANDAS: Calcificaciones, masas, edema.\n"
-    "4) HALLAZGOS: Torax: ICT, silueta cardiaca, campos pulmonares, pleura, mediastino, senos costosfrenicos. Abdomen: gas, niveles hidroaereos, organos. Extremidades: alineacion, articulaciones.\n"
-    "5) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion radiologica.\n"
-    "6) RECOMENDACIONES: TC, RM u otros estudios complementarios urgentes si aplica."
+       "xray": (
+    "Eres el mejor radiólogo del mundo con 30 años de experiencia. Analiza esta RADIOGRAFÍA con criterios radiológicos formales:\n"
+    "1) TÉCNICA: Proyección (PA, AP, lateral, oblicua), calidad técnica, penetración, rotación.\n"
+    "2) ESTRUCTURAS ÓSEAS: Huesos visibles, densidad, cortical, trabéculas, fracturas, lesiones líticas/blásticas.\n"
+    "3) PARTES BLANDAS: Tejidos blandos, calcificaciones, masas, edema.\n"
+    "4) HALLAZGOS ESPECÍFICOS POR REGIÓN:\n"
+    "   - Tórax: ICT, silueta cardíaca, hilios, campos pulmonares, pleura, mediastino, diafragma, senos costofrénicos.\n"
+    "   - Abdomen: distribución de gas, niveles hidroaéreos, calcificaciones, órganos sólidos.\n"
+    "   - Extremidades: alineación, fracturas, articulaciones, densidad ósea.\n"
+    "5) COMPARACIÓN: Con parámetros normales para edad y sexo si inferibles.\n"
+    "6) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación radiológica.\n"
+    "7) RECOMENDACIONES: Estudios complementarios (TC, RM, gammagrafía), correlación clínica urgente si aplica."
 ),
       "lab_result": (
     "Eres el mejor internista y patologo clinico del mundo. Analiza este RESULTADO DE LABORATORIO:\n"
