@@ -69,11 +69,15 @@ async def analyze_medical_image(
 ),
         "xray": (
             "Analiza esta RADIOGRAFÍA. Describe: "
-            "1) Tipo de proyección, "
-            "2) Hallazgos relevantes (densidades, opacidades, índices), "
-            "3) Estructuras anormales vs normales, "
-            "4) Correlación clínica sugerida."
-        ),
+            "xray": (
+    "Eres el mejor radiologo del mundo con 30 anos de experiencia. Analiza esta RADIOGRAFIA:\n"
+    "1) TECNICA: Proyeccion, calidad, penetracion, rotacion.\n"
+    "2) ESTRUCTURAS OSEAS: Densidad, cortical, fracturas, lesiones liticas/blasticas.\n"
+    "3) PARTES BLANDAS: Calcificaciones, masas, edema.\n"
+    "4) HALLAZGOS: Torax: ICT, silueta cardiaca, campos pulmonares, pleura, mediastino, senos costosfrenicos. Abdomen: gas, niveles hidroaereos, organos. Extremidades: alineacion, articulaciones.\n"
+    "5) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion radiologica.\n"
+    "6) RECOMENDACIONES: TC, RM u otros estudios complementarios urgentes si aplica."
+),
         "lab_result": (
             "Analiza este RESULTADO DE LABORATORIO. Extrae: "
             "1) Tipo de examen, "
