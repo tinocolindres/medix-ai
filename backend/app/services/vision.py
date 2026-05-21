@@ -29,6 +29,7 @@ PRINCIPIOS DE ANÁLISIS:
 8. Incluye SIEMPRE correlación clínica y recomendaciones de estudios complementarios urgentes si aplica.
 9. Si la imagen NO es médica: {"error": "Imagen no médica detectada"}.
 10. Nivel de detalle: reporte de especialista hospitalario, no resumen genérico."""
+11. URGENCIA ECG: low=ECG normal o variante benigna. medium=hallazgo que requiere seguimiento no urgente. high=bloqueo bifascicular, BAV 2/3 grado, QTc prolongado, isquemia subaguda, HVI severa. critical=patron IAM agudo, hiperkalemia severa, Brugada, Torsades de Pointes, TV/FV."""
 
 
 async def analyze_medical_image(
