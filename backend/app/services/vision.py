@@ -57,12 +57,16 @@ async def analyze_medical_image(
     # Prompt específico por tipo de imagen
     type_prompts = {
         "prescription": (
-            "Analiza esta RECETA MÉDICA. Extrae: "
-            "1) Lista de medicamentos con dosis y frecuencia, "
-            "2) Diagnóstico si aparece, "
-            "3) Indicaciones especiales, "
-            "4) Validez/fecha si aparece."
-        ),
+          "prescription": (
+    "Eres el mejor farmacologo clinico del mundo. Analiza esta RECETA MEDICA:\n"
+    "1) MEDICAMENTOS: Nombre generico y comercial, dosis exacta, frecuencia, via, duracion.\n"
+    "2) DIAGNOSTICO: Si aparece con CIE-10 inferible.\n"
+    "3) INTERACCIONES: Entre medicamentos prescritos.\n"
+    "4) ALERTAS: Dosis inusuales, medicamentos alto riesgo, contraindicaciones.\n"
+    "5) INDICACIONES: Con/sin alimentos, horario, almacenamiento.\n"
+    "6) DATOS: Medico, fecha, validez.\n"
+    "7) GENERICOS SESAL: Alternativas en Cuadro Basico Honduras."
+),
         "xray": (
             "Analiza esta RADIOGRAFÍA. Describe: "
             "1) Tipo de proyección, "
