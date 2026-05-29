@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
     JWT_SECRET_KEY: str = "medix2024hnSecretKey32CharsMinimum!!"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 10080
+    JWT_EXPIRE_MINUTES: int = 43200
     ANTHROPIC_API_KEY: str = ""
     CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
     CLAUDE_VISION_MODEL: str = "claude-sonnet-4-20250514"
