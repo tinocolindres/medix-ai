@@ -67,16 +67,18 @@ async def analyze_medical_image(
     "6) DATOS: Medico, fecha, validez.\n"
     "7) GENERICOS SESAL: Alternativas en Cuadro Basico Honduras."
 ),
-        "xray": (
-            "Analiza esta RADIOGRAFÍA. Describe: "
-            "xray": (
-    "Eres el mejor radiologo del mundo con 30 anos de experiencia. Analiza esta RADIOGRAFIA:\n"
-    "1) TECNICA: Proyeccion, calidad, penetracion, rotacion.\n"
-    "2) ESTRUCTURAS OSEAS: Densidad, cortical, fracturas, lesiones liticas/blasticas.\n"
-    "3) PARTES BLANDAS: Calcificaciones, masas, edema.\n"
-    "4) HALLAZGOS: Torax: ICT, silueta cardiaca, campos pulmonares, pleura, mediastino, senos costosfrenicos. Abdomen: gas, niveles hidroaereos, organos. Extremidades: alineacion, articulaciones.\n"
-    "5) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion radiologica.\n"
-    "6) RECOMENDACIONES: TC, RM u otros estudios complementarios urgentes si aplica."
+       "xray": (
+    "Eres el mejor radiólogo del mundo con 30 años de experiencia. Analiza esta RADIOGRAFÍA con criterios radiológicos formales:\n"
+    "1) TÉCNICA: Proyección (PA, AP, lateral, oblicua), calidad técnica, penetración, rotación.\n"
+    "2) ESTRUCTURAS ÓSEAS: Huesos visibles, densidad, cortical, trabéculas, fracturas, lesiones líticas/blásticas.\n"
+    "3) PARTES BLANDAS: Tejidos blandos, calcificaciones, masas, edema.\n"
+    "4) HALLAZGOS ESPECÍFICOS POR REGIÓN:\n"
+    "   - Tórax: ICT, silueta cardíaca, hilios, campos pulmonares, pleura, mediastino, diafragma, senos costofrénicos.\n"
+    "   - Abdomen: distribución de gas, niveles hidroaéreos, calcificaciones, órganos sólidos.\n"
+    "   - Extremidades: alineación, fracturas, articulaciones, densidad ósea.\n"
+    "5) COMPARACIÓN: Con parámetros normales para edad y sexo si inferibles.\n"
+    "6) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación radiológica.\n"
+    "7) RECOMENDACIONES: Estudios complementarios (TC, RM, gammagrafía), correlación clínica urgente si aplica."
 ),
       "lab_result": (
     "Eres el mejor internista y patologo clinico del mundo. Analiza este RESULTADO DE LABORATORIO:\n"
@@ -107,17 +109,18 @@ async def analyze_medical_image(
     "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
     "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
 ),
-       "ultrasound": (
-    "Eres el mejor ecografista y radiologo del mundo. Analiza esta ECOGRAFIA:\n"
-    "1) TECNICA: Transductor, ventana acustica, calidad de imagen.\n"
-    "2) ORGANO/REGION: Identifica claramente la estructura evaluada.\n"
-    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm comparadas con valores normales.\n"
-    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogeneo/heterogeneo.\n"
-    "5) MORFOLOGIA: Contornos, forma, margenes regulares/irregulares.\n"
-    "6) LESIONES FOCALES: Numero, tamano, localizacion, solida/quistica/mixta, vascularidad Doppler.\n"
-    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, liquido libre.\n"
-    "8) DIAGNOSTICO DIFERENCIAL: Ordenado por probabilidad con justificacion ecografica.\n"
-    "9) RECOMENDACIONES: Seguimiento, TC, RM, biopsia, urgencia."
+      "ultrasound": (
+    "Eres el mejor ecografista y radiólogo del mundo especializado en ultrasonido. Analiza esta ECOGRAFÍA con criterios formales:\n"
+    "1) TÉCNICA: Tipo de transductor, ventana acústica, calidad de imagen.\n"
+    "2) ÓRGANO/REGIÓN EVALUADA: Identifica claramente qué estructura se visualiza.\n"
+    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm con comparación con valores normales.\n"
+    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogéneo/heterogéneo, comparación con órganos de referencia.\n"
+    "5) MORFOLOGÍA: Contornos, forma, márgenes (regulares/irregulares/lobulados).\n"
+    "6) LESIONES FOCALES: Número, tamaño, localización, características (sólida/quística/mixta), vascularidad al Doppler si visible.\n"
+    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, líquido libre, otras estructuras involucradas.\n"
+    "8) HALLAZGOS DOPPLER: Flujo, índices de resistencia, vascularidad si aplica.\n"
+    "9) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación ecográfica.\n"
+    "10) RECOMENDACIONES: Seguimiento ecográfico, estudios complementarios (TC, RM, biopsia), urgencia."
 ),
         "other": (
             "Analiza esta imagen médica y describe todos los hallazgos relevantes."
