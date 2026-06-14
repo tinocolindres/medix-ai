@@ -1,0 +1,300 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "modulo": "Medix AI — Enfermería",
+    "taxonomias": {
+      "nanda": "NANDA-I (verificar edición vigente: 2021-2023 / 2024-2026)",
+      "noc": "NOC (verificar edición: 7ª ed.)",
+      "nic": "NIC (verificar edición: 8ª ed.)"
+    },
+    "aviso": "Andamiaje de referencia. Los códigos, definiciones, características, indicadores y actividades deben verificarse y completarse contra las ediciones oficiales licenciadas. No usar clínicamente sin validación profesional.",
+    "convencion_codigos": {
+      "nanda": "5 dígitos (p.ej. 00132)",
+      "noc": "4 dígitos (p.ej. 1605)",
+      "nic": "4 dígitos (p.ej. 1400)"
+    }
+  },
+
+  "dominios_nanda": [
+    { "id": 1,  "nombre": "Promoción de la salud" },
+    { "id": 2,  "nombre": "Nutrición" },
+    { "id": 3,  "nombre": "Eliminación e intercambio" },
+    { "id": 4,  "nombre": "Actividad / reposo" },
+    { "id": 5,  "nombre": "Percepción / cognición" },
+    { "id": 6,  "nombre": "Autopercepción" },
+    { "id": 7,  "nombre": "Rol / relaciones" },
+    { "id": 8,  "nombre": "Sexualidad" },
+    { "id": 9,  "nombre": "Afrontamiento / tolerancia al estrés" },
+    { "id": 10, "nombre": "Principios vitales" },
+    { "id": 11, "nombre": "Seguridad / protección" },
+    { "id": 12, "nombre": "Confort" },
+    { "id": 13, "nombre": "Crecimiento / desarrollo" }
+  ],
+
+  "diagnosticos": [
+    {
+      "codigo": "00132",
+      "etiqueta": "Dolor agudo",
+      "dominio": 12,
+      "clase": "Confort físico",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Experiencia sensitiva y emocional desagradable de inicio reciente y duración limitada.",
+      "caracteristicas_definitorias": [
+        "Expresión facial de dolor",
+        "Conducta de protección / defensa de la zona",
+        "Informe verbal de dolor (escala EVA)",
+        "Cambios en signos vitales"
+      ],
+      "factores_relacionados": [
+        "Agente lesivo físico (procedimiento, traumatismo)",
+        "Agente lesivo biológico",
+        "Agente lesivo químico"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["1605", "2102"],
+      "nic_sugeridos": ["1400", "2210"]
+    },
+    {
+      "codigo": "00031",
+      "etiqueta": "Limpieza ineficaz de las vías aéreas",
+      "dominio": 11,
+      "clase": "Función respiratoria",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Incapacidad para eliminar secreciones u obstrucciones del tracto respiratorio.",
+      "caracteristicas_definitorias": [
+        "Tos ineficaz o ausente",
+        "Ruidos respiratorios adventicios",
+        "Cambios en la frecuencia / patrón respiratorio",
+        "Disnea"
+      ],
+      "factores_relacionados": [
+        "Secreciones retenidas",
+        "Vía aérea artificial",
+        "Espasmo de la vía aérea"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["0410"],
+      "nic_sugeridos": ["3140", "3250", "3160"]
+    },
+    {
+      "codigo": "00004",
+      "etiqueta": "Riesgo de infección",
+      "dominio": 11,
+      "clase": "Infección",
+      "tipo": "riesgo",
+      "definicion": "[VERIFICAR] Susceptibilidad a una invasión y multiplicación de organismos patógenos.",
+      "caracteristicas_definitorias": [],
+      "factores_relacionados": [],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [
+        "Procedimientos invasivos",
+        "Alteración de la integridad de la piel",
+        "Defensas primarias / secundarias insuficientes",
+        "Enfermedad crónica"
+      ],
+      "noc_sugeridos": ["1924", "0703"],
+      "nic_sugeridos": ["6540", "6550"]
+    },
+    {
+      "codigo": "00002",
+      "etiqueta": "Desequilibrio nutricional: ingesta inferior a las necesidades",
+      "dominio": 2,
+      "clase": "Ingestión",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Ingesta de nutrientes insuficiente para satisfacer las necesidades metabólicas.",
+      "caracteristicas_definitorias": [
+        "Peso corporal inferior al ideal",
+        "Ingesta inferior a las cantidades recomendadas",
+        "Saciedad inmediata",
+        "Debilidad de los músculos para la deglución"
+      ],
+      "factores_relacionados": [
+        "Incapacidad para ingerir alimentos",
+        "Incapacidad para absorber nutrientes",
+        "Factores psicológicos"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["1004"],
+      "nic_sugeridos": ["1100", "1120"]
+    },
+    {
+      "codigo": "00027",
+      "etiqueta": "Déficit de volumen de líquidos",
+      "dominio": 2,
+      "clase": "Hidratación",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Disminución del líquido intravascular, intersticial o intracelular.",
+      "caracteristicas_definitorias": [
+        "Disminución de la turgencia cutánea",
+        "Sequedad de mucosas",
+        "Aumento de la frecuencia cardíaca / hipotensión",
+        "Disminución de la diuresis"
+      ],
+      "factores_relacionados": [
+        "Pérdida activa de volumen de líquidos",
+        "Aporte de líquidos insuficiente"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["0601"],
+      "nic_sugeridos": ["4120", "2080"]
+    },
+    {
+      "codigo": "00046",
+      "etiqueta": "Deterioro de la integridad cutánea",
+      "dominio": 11,
+      "clase": "Lesión física",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Alteración de la epidermis y/o la dermis.",
+      "caracteristicas_definitorias": [
+        "Alteración de la integridad de la piel",
+        "Enrojecimiento / eritema",
+        "Disrupción de la superficie cutánea"
+      ],
+      "factores_relacionados": [
+        "Presión sobre prominencia ósea",
+        "Inmovilización física",
+        "Humedad",
+        "Alteración del estado nutricional"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["1101"],
+      "nic_sugeridos": ["3590", "3520"]
+    },
+    {
+      "codigo": "00085",
+      "etiqueta": "Deterioro de la movilidad física",
+      "dominio": 4,
+      "clase": "Actividad / ejercicio",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Limitación del movimiento físico independiente e intencionado del cuerpo o de una o más extremidades.",
+      "caracteristicas_definitorias": [
+        "Disminución de la amplitud de movimientos",
+        "Limitación de habilidades motoras finas / gruesas",
+        "Inestabilidad postural",
+        "Movimientos lentos"
+      ],
+      "factores_relacionados": [
+        "Dolor",
+        "Disminución de la fuerza muscular",
+        "Deterioro neuromuscular",
+        "Prescripción de restricción de movimientos"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["0208"],
+      "nic_sugeridos": ["0140", "0224"]
+    },
+    {
+      "codigo": "00126",
+      "etiqueta": "Conocimientos deficientes",
+      "dominio": 5,
+      "clase": "Cognición",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Carencia de información cognitiva relacionada con un tema específico.",
+      "caracteristicas_definitorias": [
+        "Conocimiento insuficiente sobre el tema",
+        "Seguimiento inexacto de instrucciones",
+        "Conducta inapropiada"
+      ],
+      "factores_relacionados": [
+        "Información insuficiente",
+        "Interés insuficiente en aprender",
+        "Interpretación errónea de la información"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["1803"],
+      "nic_sugeridos": ["5602", "5616"]
+    },
+    {
+      "codigo": "00146",
+      "etiqueta": "Ansiedad",
+      "dominio": 9,
+      "clase": "Respuestas de afrontamiento",
+      "tipo": "real",
+      "definicion": "[VERIFICAR] Sensación vaga e intranquilizadora de malestar o amenaza acompañada de respuesta autónoma.",
+      "caracteristicas_definitorias": [
+        "Nerviosismo / inquietud",
+        "Preocupación",
+        "Aumento de la tensión",
+        "Manifestaciones autónomas (taquicardia, sudoración)"
+      ],
+      "factores_relacionados": [
+        "Cambio en el estado de salud",
+        "Amenaza de muerte",
+        "Estrés",
+        "Conflicto sobre objetivos vitales"
+      ],
+      "poblacion_riesgo": [],
+      "factores_riesgo": [],
+      "noc_sugeridos": ["1211", "1402"],
+      "nic_sugeridos": ["5820", "5230"]
+    },
+    {
+      "codigo": "00155",
+      "etiqueta": "Riesgo de caídas",
+      "dominio": 11,
+      "clase": "Lesión física",
+      "tipo": "riesgo",
+      "definicion": "[VERIFICAR] Susceptibilidad a sufrir caídas que pueden causar daño físico.",
+      "caracteristicas_definitorias": [],
+      "factores_relacionados": [],
+      "poblacion_riesgo": [
+        "Adultos mayores",
+        "Antecedente de caídas"
+      ],
+      "factores_riesgo": [
+        "Deterioro de la movilidad",
+        "Alteración del estado mental",
+        "Uso de dispositivos de ayuda",
+        "Entorno no seguro"
+      ],
+      "noc_sugeridos": ["1909"],
+      "nic_sugeridos": ["6490"]
+    }
+  ],
+
+  "noc": [
+    { "codigo": "1605", "etiqueta": "Control del dolor", "dominio": "Salud percibida", "clase": "Sintomatología", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "2102", "etiqueta": "Nivel del dolor", "dominio": "Salud percibida", "clase": "Sintomatología", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "0410", "etiqueta": "Estado respiratorio: permeabilidad de las vías respiratorias", "dominio": "Salud fisiológica", "clase": "Cardiopulmonar", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1924", "etiqueta": "Control del riesgo: proceso infeccioso", "dominio": "Conocimiento y conducta de salud", "clase": "Control del riesgo y seguridad", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "0703", "etiqueta": "Severidad de la infección", "dominio": "Salud fisiológica", "clase": "Respuesta inmune", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1004", "etiqueta": "Estado nutricional", "dominio": "Salud fisiológica", "clase": "Nutrición", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "0601", "etiqueta": "Equilibrio hídrico", "dominio": "Salud fisiológica", "clase": "Líquidos y electrolitos", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1101", "etiqueta": "Integridad tisular: piel y membranas mucosas", "dominio": "Salud fisiológica", "clase": "Integridad tisular", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "0208", "etiqueta": "Movilidad", "dominio": "Salud funcional", "clase": "Movilidad", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1803", "etiqueta": "Conocimiento: proceso de la enfermedad", "dominio": "Conocimiento y conducta de salud", "clase": "Conocimientos sobre salud", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1211", "etiqueta": "Nivel de ansiedad", "dominio": "Salud psicosocial", "clase": "Bienestar psicológico", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1402", "etiqueta": "Autocontrol de la ansiedad", "dominio": "Salud psicosocial", "clase": "Autocontrol", "indicadores": [], "escala": "Likert 1-5" },
+    { "codigo": "1909", "etiqueta": "Conducta de prevención de caídas", "dominio": "Conocimiento y conducta de salud", "clase": "Control del riesgo y seguridad", "indicadores": [], "escala": "Likert 1-5" }
+  ],
+
+  "nic": [
+    { "codigo": "1400", "etiqueta": "Manejo del dolor", "campo": "Fisiológico complejo", "clase": "Control de la perfusión tisular", "actividades": [] },
+    { "codigo": "2210", "etiqueta": "Administración de analgésicos", "campo": "Fisiológico complejo", "clase": "Control de fármacos", "actividades": [] },
+    { "codigo": "3140", "etiqueta": "Manejo de la vía aérea", "campo": "Fisiológico complejo", "clase": "Control respiratorio", "actividades": [] },
+    { "codigo": "3250", "etiqueta": "Mejora de la tos", "campo": "Fisiológico complejo", "clase": "Control respiratorio", "actividades": [] },
+    { "codigo": "3160", "etiqueta": "Aspiración de las vías aéreas", "campo": "Fisiológico complejo", "clase": "Control respiratorio", "actividades": [] },
+    { "codigo": "6540", "etiqueta": "Control de infecciones", "campo": "Seguridad", "clase": "Control de riesgos", "actividades": [] },
+    { "codigo": "6550", "etiqueta": "Protección contra las infecciones", "campo": "Seguridad", "clase": "Control de riesgos", "actividades": [] },
+    { "codigo": "1100", "etiqueta": "Manejo de la nutrición", "campo": "Fisiológico básico", "clase": "Apoyo nutricional", "actividades": [] },
+    { "codigo": "1120", "etiqueta": "Terapia nutricional", "campo": "Fisiológico básico", "clase": "Apoyo nutricional", "actividades": [] },
+    { "codigo": "4120", "etiqueta": "Manejo de líquidos", "campo": "Fisiológico complejo", "clase": "Control de electrolitos y ácido-base", "actividades": [] },
+    { "codigo": "2080", "etiqueta": "Manejo de líquidos / electrolitos", "campo": "Fisiológico complejo", "clase": "Control de electrolitos y ácido-base", "actividades": [] },
+    { "codigo": "3590", "etiqueta": "Vigilancia de la piel", "campo": "Fisiológico complejo", "clase": "Control de la piel / heridas", "actividades": [] },
+    { "codigo": "3520", "etiqueta": "Cuidados de las úlceras por presión", "campo": "Fisiológico complejo", "clase": "Control de la piel / heridas", "actividades": [] },
+    { "codigo": "0140", "etiqueta": "Fomentar la mecánica corporal", "campo": "Fisiológico básico", "clase": "Control de actividad y ejercicio", "actividades": [] },
+    { "codigo": "0224", "etiqueta": "Terapia de ejercicios: movilidad articular", "campo": "Fisiológico básico", "clase": "Control de actividad y ejercicio", "actividades": [] },
+    { "codigo": "5602", "etiqueta": "Enseñanza: proceso de enfermedad", "campo": "Conductual", "clase": "Educación de los pacientes", "actividades": [] },
+    { "codigo": "5616", "etiqueta": "Enseñanza: medicamentos prescritos", "campo": "Conductual", "clase": "Educación de los pacientes", "actividades": [] },
+    { "codigo": "5820", "etiqueta": "Disminución de la ansiedad", "campo": "Conductual", "clase": "Ayuda para el afrontamiento", "actividades": [] },
+    { "codigo": "5230", "etiqueta": "Mejorar el afrontamiento", "campo": "Conductual", "clase": "Ayuda para el afrontamiento", "actividades": [] },
+    { "codigo": "6490", "etiqueta": "Prevención de caídas", "campo": "Seguridad", "clase": "Control de riesgos", "actividades": [] }
+  ]
+}
