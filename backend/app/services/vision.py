@@ -28,7 +28,7 @@ PRINCIPIOS DE ANÁLISIS:
 7. NUNCA des diagnóstico definitivo — da diagnóstico diferencial ordenado por probabilidad.
 8. Incluye SIEMPRE correlación clínica y recomendaciones de estudios complementarios urgentes si aplica.
 9. Si la imagen NO es médica: {"error": "Imagen no médica detectada"}.
-10. Nivel de detalle: reporte de especialista hospitalario, no resumen genérico."""
+10. Nivel de detalle: reporte de especialista hospitalario, no resumen genérico.
 11. URGENCIA ECG: low=ECG normal o variante benigna. medium=hallazgo que requiere seguimiento no urgente. high=bloqueo bifascicular, BAV 2/3 grado, QTc prolongado, isquemia subaguda, HVI severa. critical=patron IAM agudo, hiperkalemia severa, Brugada, Torsades de Pointes, TV/FV."""
 
 
@@ -40,13 +40,13 @@ async def analyze_medical_image(
 ) -> dict:
     """
     Analiza una imagen médica con Claude Vision.
-    
+
     Args:
         image_data: bytes de la imagen
         media_type: "image/jpeg" | "image/png" | "image/webp"
         scan_type: "prescription" | "xray" | "lab_result" | "ecg" | "ultrasound" | "other"
         user_context: contexto adicional del usuario (ej: "Paciente masculino 40 años")
-    
+
     Returns:
         dict con summary, findings, recommendations, urgency_level, confidence_score
     """
@@ -57,71 +57,70 @@ async def analyze_medical_image(
     # Prompt específico por tipo de imagen
     type_prompts = {
         "prescription": (
-          "prescription": (
-    "Eres el mejor farmacologo clinico del mundo. Analiza esta RECETA MEDICA:\n"
-    "1) MEDICAMENTOS: Nombre generico y comercial, dosis exacta, frecuencia, via, duracion.\n"
-    "2) DIAGNOSTICO: Si aparece con CIE-10 inferible.\n"
-    "3) INTERACCIONES: Entre medicamentos prescritos.\n"
-    "4) ALERTAS: Dosis inusuales, medicamentos alto riesgo, contraindicaciones.\n"
-    "5) INDICACIONES: Con/sin alimentos, horario, almacenamiento.\n"
-    "6) DATOS: Medico, fecha, validez.\n"
-    "7) GENERICOS SESAL: Alternativas en Cuadro Basico Honduras."
-),
-       "xray": (
-    "Eres el mejor radiólogo del mundo con 30 años de experiencia. Analiza esta RADIOGRAFÍA con criterios radiológicos formales:\n"
-    "1) TÉCNICA: Proyección (PA, AP, lateral, oblicua), calidad técnica, penetración, rotación.\n"
-    "2) ESTRUCTURAS ÓSEAS: Huesos visibles, densidad, cortical, trabéculas, fracturas, lesiones líticas/blásticas.\n"
-    "3) PARTES BLANDAS: Tejidos blandos, calcificaciones, masas, edema.\n"
-    "4) HALLAZGOS ESPECÍFICOS POR REGIÓN:\n"
-    "   - Tórax: ICT, silueta cardíaca, hilios, campos pulmonares, pleura, mediastino, diafragma, senos costofrénicos.\n"
-    "   - Abdomen: distribución de gas, niveles hidroaéreos, calcificaciones, órganos sólidos.\n"
-    "   - Extremidades: alineación, fracturas, articulaciones, densidad ósea.\n"
-    "5) COMPARACIÓN: Con parámetros normales para edad y sexo si inferibles.\n"
-    "6) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación radiológica.\n"
-    "7) RECOMENDACIONES: Estudios complementarios (TC, RM, gammagrafía), correlación clínica urgente si aplica."
-),
-      "lab_result": (
-    "Eres el mejor internista y patologo clinico del mundo. Analiza este RESULTADO DE LABORATORIO:\n"
-    "1) TIPO DE EXAMEN: Identifica todos los paneles y pruebas presentes.\n"
-    "2) VALORES COMPLETOS: Cada valor con unidad y rango de referencia del laboratorio.\n"
-    "3) VALORES ALTERADOS: Marca claramente valores ALTOS y BAJOS con magnitud de desviacion.\n"
-    "4) INTERPRETACION POR SISTEMA: Hematologia (anemia, leucocitosis), quimica (renal, hepatica, glucemia, electrolitos), lipidos (riesgo CV), inflamacion (PCR, VSG).\n"
-    "5) PATRONES DIAGNOSTICOS: Sindrome nefrotico, hepatitis, DM, sepsis, etc.\n"
-    "6) VALORES DE PANICO: K+>6.5, glucosa>500, Cr>10 — accion inmediata.\n"
-    "7) DIAGNOSTICO DIFERENCIAL: Basado en conjunto de alteraciones.\n"
-    "8) RECOMENDACIONES: Estudios complementarios, repeticion de valores urgentes."
-),
+            "Eres el mejor farmacologo clinico del mundo. Analiza esta RECETA MEDICA:\n"
+            "1) MEDICAMENTOS: Nombre generico y comercial, dosis exacta, frecuencia, via, duracion.\n"
+            "2) DIAGNOSTICO: Si aparece con CIE-10 inferible.\n"
+            "3) INTERACCIONES: Entre medicamentos prescritos.\n"
+            "4) ALERTAS: Dosis inusuales, medicamentos alto riesgo, contraindicaciones.\n"
+            "5) INDICACIONES: Con/sin alimentos, horario, almacenamiento.\n"
+            "6) DATOS: Medico, fecha, validez.\n"
+            "7) GENERICOS SESAL: Alternativas en Cuadro Basico Honduras."
+        ),
+        "xray": (
+            "Eres el mejor radiólogo del mundo con 30 años de experiencia. Analiza esta RADIOGRAFÍA con criterios radiológicos formales:\n"
+            "1) TÉCNICA: Proyección (PA, AP, lateral, oblicua), calidad técnica, penetración, rotación.\n"
+            "2) ESTRUCTURAS ÓSEAS: Huesos visibles, densidad, cortical, trabéculas, fracturas, lesiones líticas/blásticas.\n"
+            "3) PARTES BLANDAS: Tejidos blandos, calcificaciones, masas, edema.\n"
+            "4) HALLAZGOS ESPECÍFICOS POR REGIÓN:\n"
+            "   - Tórax: ICT, silueta cardíaca, hilios, campos pulmonares, pleura, mediastino, diafragma, senos costofrénicos.\n"
+            "   - Abdomen: distribución de gas, niveles hidroaéreos, calcificaciones, órganos sólidos.\n"
+            "   - Extremidades: alineación, fracturas, articulaciones, densidad ósea.\n"
+            "5) COMPARACIÓN: Con parámetros normales para edad y sexo si inferibles.\n"
+            "6) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación radiológica.\n"
+            "7) RECOMENDACIONES: Estudios complementarios (TC, RM, gammagrafía), correlación clínica urgente si aplica."
+        ),
+        "lab_result": (
+            "Eres el mejor internista y patologo clinico del mundo. Analiza este RESULTADO DE LABORATORIO:\n"
+            "1) TIPO DE EXAMEN: Identifica todos los paneles y pruebas presentes.\n"
+            "2) VALORES COMPLETOS: Cada valor con unidad y rango de referencia del laboratorio.\n"
+            "3) VALORES ALTERADOS: Marca claramente valores ALTOS y BAJOS con magnitud de desviacion.\n"
+            "4) INTERPRETACION POR SISTEMA: Hematologia (anemia, leucocitosis), quimica (renal, hepatica, glucemia, electrolitos), lipidos (riesgo CV), inflamacion (PCR, VSG).\n"
+            "5) PATRONES DIAGNOSTICOS: Sindrome nefrotico, hepatitis, DM, sepsis, etc.\n"
+            "6) VALORES DE PANICO: K+>6.5, glucosa>500, Cr>10 — accion inmediata.\n"
+            "7) DIAGNOSTICO DIFERENCIAL: Basado en conjunto de alteraciones.\n"
+            "8) RECOMENDACIONES: Estudios complementarios, repeticion de valores urgentes."
+        ),
         "ecg": (
-    "Eres el mejor cardiologo y electrofisiologo del mundo con 30 anos de experiencia interpretando ECGs. "
-    "Analiza este ELECTROCARDIOGRAMA con la profundidad y precision de un cardiologo experto. "
-    "Evalua OBLIGATORIAMENTE cada punto:\n"
-    "1) RITMO: Sinusal/FA/flutter/TSV/marcapasos. Frecuencia ventricular y auricular exacta en lpm.\n"
-    "2) EJE ELECTRICO: Normal/izquierda/derecha/indeterminado. Grados aproximados.\n"
-    "3) ONDAS P: Presencia, morfologia, duracion, amplitud. P mitrale, P pulmonale, ausencia.\n"
-    "4) INTERVALO PR: Duracion en ms. Bloqueo AV 1/2/3 grado - Mobitz I o II si aplica.\n"
-    "5) QRS: Duracion ms. BRD o BRI completo/incompleto. Hemibloqueos. Onda Q patologica con derivaciones afectadas. Criterios HVI/HVD Sokolow-Lyon y Cornell.\n"
-    "6) SEGMENTO ST: Elevacion o depresion por derivacion en mm. Patron lesion/isquemia/pericarditis.\n"
-    "7) ONDA T: Hiperagudas simetricas (hiperkalemia o IAM hiperagudo). Inversion por derivacion. Ondas T picudas.\n"
-    "8) QT/QTc: Duracion corregida en ms. Prolongado con riesgo Torsades de Pointes.\n"
-    "9) ONDA U: Prominente en hipokalemia.\n"
-    "10) HALLAZGOS ESPECIALES: WPW, Brugada, hiperkalemia, hipokalemia, efecto digitalis, strain, repolarizacion precoz.\n"
-    "11) CORRELACION CLINICA: Diferencial ordenado por probabilidad. Urgencia. Estudios urgentes recomendados.\n"
-    "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
-    "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
-),
-      "ultrasound": (
-    "Eres el mejor ecografista y radiólogo del mundo especializado en ultrasonido. Analiza esta ECOGRAFÍA con criterios formales:\n"
-    "1) TÉCNICA: Tipo de transductor, ventana acústica, calidad de imagen.\n"
-    "2) ÓRGANO/REGIÓN EVALUADA: Identifica claramente qué estructura se visualiza.\n"
-    "3) MEDIDAS: Todas las dimensiones visibles en mm/cm con comparación con valores normales.\n"
-    "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogéneo/heterogéneo, comparación con órganos de referencia.\n"
-    "5) MORFOLOGÍA: Contornos, forma, márgenes (regulares/irregulares/lobulados).\n"
-    "6) LESIONES FOCALES: Número, tamaño, localización, características (sólida/quística/mixta), vascularidad al Doppler si visible.\n"
-    "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, líquido libre, otras estructuras involucradas.\n"
-    "8) HALLAZGOS DOPPLER: Flujo, índices de resistencia, vascularidad si aplica.\n"
-    "9) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación ecográfica.\n"
-    "10) RECOMENDACIONES: Seguimiento ecográfico, estudios complementarios (TC, RM, biopsia), urgencia."
-),
+            "Eres el mejor cardiologo y electrofisiologo del mundo con 30 anos de experiencia interpretando ECGs. "
+            "Analiza este ELECTROCARDIOGRAMA con la profundidad y precision de un cardiologo experto. "
+            "Evalua OBLIGATORIAMENTE cada punto:\n"
+            "1) RITMO: Sinusal/FA/flutter/TSV/marcapasos. Frecuencia ventricular y auricular exacta en lpm.\n"
+            "2) EJE ELECTRICO: Normal/izquierda/derecha/indeterminado. Grados aproximados.\n"
+            "3) ONDAS P: Presencia, morfologia, duracion, amplitud. P mitrale, P pulmonale, ausencia.\n"
+            "4) INTERVALO PR: Duracion en ms. Bloqueo AV 1/2/3 grado - Mobitz I o II si aplica.\n"
+            "5) QRS: Duracion ms. BRD o BRI completo/incompleto. Hemibloqueos. Onda Q patologica con derivaciones afectadas. Criterios HVI/HVD Sokolow-Lyon y Cornell.\n"
+            "6) SEGMENTO ST: Elevacion o depresion por derivacion en mm. Patron lesion/isquemia/pericarditis.\n"
+            "7) ONDA T: Hiperagudas simetricas (hiperkalemia o IAM hiperagudo). Inversion por derivacion. Ondas T picudas.\n"
+            "8) QT/QTc: Duracion corregida en ms. Prolongado con riesgo Torsades de Pointes.\n"
+            "9) ONDA U: Prominente en hipokalemia.\n"
+            "10) HALLAZGOS ESPECIALES: WPW, Brugada, hiperkalemia, hipokalemia, efecto digitalis, strain, repolarizacion precoz.\n"
+            "11) CORRELACION CLINICA: Diferencial ordenado por probabilidad. Urgencia. Estudios urgentes recomendados.\n"
+            "12) IMPRESION DIAGNOSTICA FINAL: Interpretacion global clara y directa como cardiologo experto.\n"
+            "Se MUY especifico: menciona derivaciones exactas, valores numericos visibles, no omitas ningun hallazgo sutil."
+        ),
+        "ultrasound": (
+            "Eres el mejor ecografista y radiólogo del mundo especializado en ultrasonido. Analiza esta ECOGRAFÍA con criterios formales:\n"
+            "1) TÉCNICA: Tipo de transductor, ventana acústica, calidad de imagen.\n"
+            "2) ÓRGANO/REGIÓN EVALUADA: Identifica claramente qué estructura se visualiza.\n"
+            "3) MEDIDAS: Todas las dimensiones visibles en mm/cm con comparación con valores normales.\n"
+            "4) ECOGENICIDAD: Hiper/hipo/anecoico, homogéneo/heterogéneo, comparación con órganos de referencia.\n"
+            "5) MORFOLOGÍA: Contornos, forma, márgenes (regulares/irregulares/lobulados).\n"
+            "6) LESIONES FOCALES: Número, tamaño, localización, características (sólida/quística/mixta), vascularidad al Doppler si visible.\n"
+            "7) ESTRUCTURAS ADYACENTES: Ganglios, vasos, líquido libre, otras estructuras involucradas.\n"
+            "8) HALLAZGOS DOPPLER: Flujo, índices de resistencia, vascularidad si aplica.\n"
+            "9) DIAGNÓSTICO DIFERENCIAL: Ordenado por probabilidad con justificación ecográfica.\n"
+            "10) RECOMENDACIONES: Seguimiento ecográfico, estudios complementarios (TC, RM, biopsia), urgencia."
+        ),
         "other": (
             "Analiza esta imagen médica y describe todos los hallazgos relevantes."
         ),
