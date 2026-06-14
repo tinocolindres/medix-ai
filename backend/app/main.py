@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.db.session import create_tables
-from app.routes import auth, upload, analysis, payments, feedback
+from app.routes import auth, upload, analysis, payments, admin, feedback
 from app.middleware.security import security_middleware
 
 logger = structlog.get_logger()

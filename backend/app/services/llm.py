@@ -10,10 +10,10 @@ from app.core.config import settings
 
 client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SYSTEM PROMPTS POR ROL
 # ─────────────────────────────────────────────────────────────────────────────
-
 def build_system_prompt(
     user_role: str,
     university_acronym: str = None,
@@ -24,21 +24,21 @@ def build_system_prompt(
     hospital: str = None,
     mode: str = "chat",
 ) -> str:
-
-    "Eres **Medix AI**, el medico virtual mas avanzado y completo del mundo. "
-"Combinas el conocimiento de los mejores especialistas: cardiologo, internista, emergenciologo, "
-"pediatra, ginecologo, neurologo, nefrologo, infectologo y radiologo con 30+ anos de experiencia.\n\n"
-"Entrenado con PubMed, NEJM, Lancet, JAMA, guias AHA/ACC/IDSA/ACOG/WHO y protocolos SESAL Honduras.\n\n"
-"Tu analisis es EXHAUSTIVO, PRECISO y ESTRUCTURADO como especialista hospitalario. "
-"Nunca das respuestas genericas. Das analisis profundo con valores numericos, "
-"criterios diagnosticos formales, escalas clinicas y referencias a guias actuales.\n\n"
+    persona = (
+        "Eres **Medix AI**, el medico virtual mas avanzado y completo del mundo. "
+        "Combinas el conocimiento de los mejores especialistas: cardiologo, internista, emergenciologo, "
+        "pediatra, ginecologo, neurologo, nefrologo, infectologo y radiologo con 30+ anos de experiencia.\n\n"
+        "Entrenado con PubMed, NEJM, Lancet, JAMA, guias AHA/ACC/IDSA/ACOG/WHO y protocolos SESAL Honduras.\n\n"
+        "Tu analisis es EXHAUSTIVO, PRECISO y ESTRUCTURADO como especialista hospitalario. "
+        "Nunca das respuestas genericas. Das analisis profundo con valores numericos, "
+        "criterios diagnosticos formales, escalas clinicas y referencias a guias actuales.\n\n"
+    )
 
     # ── Contexto por rol ──────────────────────────────────────────────────────
     if user_role == "student":
         period_info = f" en {period_name}" if period_name else ""
         subject_info = f", cursando **{subject_name}**" if subject_name else ""
         hint = f"\n   *Contexto curricular:* {subject_ai_hint}" if subject_ai_hint else ""
-
         context = (
             f"**USUARIO:** Estudiante de medicina de **{university_acronym or 'universidad'}**"
             f"{period_info}{subject_info}.{hint}\n\n"
@@ -46,7 +46,6 @@ def build_system_prompt(
             "**método socrático**. Explica la fisiopatología subyacente, usa analogías simples "
             "y fomenta el pensamiento crítico. Celebra el razonamiento correcto.\n"
         )
-
     elif user_role == "medico_general":
         context = (
             "**USUARIO:** Médico General en turno (posiblemente en guardia hospitalaria o "
@@ -56,7 +55,6 @@ def build_system_prompt(
             "dosificación precisa basada en el Cuadro Básico de Medicamentos de Honduras. "
             "Evita fisiopatología larga salvo que se solicite.\n"
         )
-
     elif user_role == "medico_residente":
         spec_info = f" de {specialty}" if specialty else ""
         hosp_info = f" en {hospital}" if hospital else " en hospital público de Honduras"
@@ -71,8 +69,7 @@ def build_system_prompt(
             "Si hay controversia en la literatura, menciónala. "
             "Recuerda el contexto hospitalario hondureño (HEU, Catarino Rivas).\n"
         )
-
-
+    elif user_role == "medico_especialista":
         spec_info = f" ({specialty})" if specialty else ""
         context = (
             f"**USUARIO:** Médico Especialista{spec_info}. Trátalo como colega experto.\n\n"
@@ -134,7 +131,6 @@ def build_system_prompt(
 # ─────────────────────────────────────────────────────────────────────────────
 # CHAT CONTEXTUAL
 # ─────────────────────────────────────────────────────────────────────────────
-
 async def generate_chat_response(
     message: str,
     chat_history: list[dict],
@@ -169,14 +165,12 @@ async def generate_chat_response(
     messages.append({"role": "user", "content": message})
 
     start_time = time.time()
-
     response = await client.messages.create(
         model=settings.CLAUDE_MODEL,
         max_tokens=settings.CLAUDE_MAX_TOKENS,
         system=system_prompt,
         messages=messages,
     )
-
     elapsed_ms = (time.time() - start_time) * 1000
 
     return {
@@ -220,7 +214,6 @@ async def stream_chat_response(
 # ─────────────────────────────────────────────────────────────────────────────
 # SOAP DICTATION
 # ─────────────────────────────────────────────────────────────────────────────
-
 async def generate_soap_note(raw_dictation: str, user_role: str = "medico_general") -> dict:
     """
     Transforma dictado de voz en nota SOAP estructurada.
@@ -249,7 +242,6 @@ async def generate_soap_note(raw_dictation: str, user_role: str = "medico_genera
 # ─────────────────────────────────────────────────────────────────────────────
 # ECOE SIMULATOR
 # ─────────────────────────────────────────────────────────────────────────────
-
 ECOE_CASES = [
     {
         "id": "ecoe_001",
@@ -493,6 +485,7 @@ ECOE_CASES = [
         ),
     },
 ]
+
 
 async def start_ecoe_simulation(case_id: str, first_message: str = None) -> dict:
     """Inicia simulación de ECOE con un caso clínico."""
