@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.db.session import create_tables
-from app.routes import auth, upload, analysis, payments, feedback
+from app.routes import auth, upload, analysis, payments, feedback, enfermeria_nnn
 # from app.routes import admin  # temporarily disabled
 from app.middleware.security import security_middleware
 
@@ -70,6 +70,7 @@ app.include_router(analysis.router,       prefix=f"{V1}/analysis",     tags=["�
 app.include_router(payments.router,       prefix=f"{V1}/subscription", tags=["💳 Pagos"])
 # app.include_router(admin.router, prefix=f"{V1}/admin", tags=["🛡️ Admin"])
 app.include_router(feedback.router,       prefix=f"{V1}",              tags=["⭐ Feedback"])
+app.include_router(enfermeria_nnn.router, prefix=V1)
 
 # ── Health ────────────────────────────────────────────────────
 @app.get("/", tags=["Sistema"])
