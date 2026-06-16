@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 43200
     ANTHROPIC_API_KEY: str = ""
-    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
-    CLAUDE_VISION_MODEL: str = "claude-sonnet-4-20250514"
+    CLAUDE_MODEL: str = "claude-sonnet-4-6"
+    CLAUDE_VISION_MODEL: str = "claude-sonnet-4-6"
     CLAUDE_MAX_TOKENS: int = 2000
     RATE_LIMIT_FREE_CHAT: int = 20
     RATE_LIMIT_PRO_CHAT: int = 500
