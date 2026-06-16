@@ -142,7 +142,7 @@ Responde ÚNICAMENTE con este JSON (sin texto adicional):
 
     response = await client.messages.create(
         model=settings.CLAUDE_VISION_MODEL,
-        max_tokens=3000,
+        max_tokens=8000,
         temperature=0,
         system=VISION_SYSTEM_PROMPT,
         messages=[{
@@ -165,15 +165,16 @@ Responde ÚNICAMENTE con este JSON (sin texto adicional):
 
     # Parse JSON response
     import json
+    raw_text = response.content[0].text.strip()
+    # Extraer el objeto JSON aunque venga con ```json ... ``` o texto extra
+    inicio = raw_text.find("{")
+    fin = raw_text.rfind("}")
+    json_text = raw_text[inicio:fin + 1] if (inicio != -1 and fin > inicio) else raw_text
     try:
-        raw_text = response.content[0].text.strip()
-        # Limpiar posibles backticks de markdown
-        if raw_text.startswith("```"):
-            raw_text = raw_text.split("```")[1]
-            if raw_text.startswith("json"):
-                raw_text = raw_text[4:]
-        result = json.loads(raw_text)
-    except (json.JSONDecodeError, IndexError):
+        result = json.loads(json_text)
+    except json.JSONDecodeError as e:
+        print(f"VISION_PARSE_FAIL error={e} stop={response.stop_reason} "
+              f"len={len(raw_text)} tail={raw_text[-200:]!r}")
         result = {
             "summary": response.content[0].text[:500],
             "findings": "Error parseando respuesta estructurada.",
